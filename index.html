@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxury Jewels - Joyería Fina</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Luxury <span>Jewels</span></h1>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="#inicio">Inicio</a></li>
+                    <li><a href="#colecciones">Colecciones</a></li>
+                    <li><a href="#nosotros">Nosotros</a></li>
+                    <li><a href="#contacto">Contacto</a></li>
+                </ul>
+            </nav>
+            
+            <div class="cart-icon">
+                <!--
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count">0</span>
+                -->
+            </div>
+            
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="inicio" class="hero">
+            <div class="hero-content">
+                <h2>Joyería Exclusiva Hecha a Mano</h2>
+                <p>Descubre piezas únicas que cuentan tu historia</p>
+                <a href="#colecciones" class="btn">Ver Colección</a>
+            </div>
+        </section>
+
+        <section class="categories">
+            <div class="container">
+                <h2>Nuestras Categorías</h2>
+                <div class="category-buttons">
+                    <button class="category-btn active" data-category="all">Todos</button>
+                    <button class="category-btn" data-category="anillos">Anillos</button>
+                    <button class="category-btn" data-category="collares">Collares</button>
+                    <button class="category-btn" data-category="pulseras">Pulseras</button>
+                    <button class="category-btn" data-category="pendientes">Pendientes</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="colecciones" class="products">
+            <div class="container">
+                <h2>Nuestras Joyas</h2>
+                <div class="product-grid" id="product-grid">
+                    <!-- Productos se cargarán dinámicamente desde db.js -->
+                </div>
+            </div>
+        </section>
+
+        <section id="nosotros" class="about">
+            <div class="container">
+                <div class="about-content">
+                    <h2>Artesanía con Historia</h2>
+                    <p>En Luxury Jewels combinamos técnicas ancestrales con diseño contemporáneo para crear piezas que trascienden el tiempo. Cada joya es elaborada por maestros artesanos con los más altos estándares de calidad.</p>
+                    <p>Utilizamos metales preciosos y gemas certificadas, asegurando autenticidad y durabilidad en cada creación.</p>
+                </div>
+                <div class="about-image">
+                    <img src="https://images.unsplash.com/photo-1602173574767-37ac01994b2a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Artesano trabajando">
+                </div>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="container">
+                <div class="feature-box">
+                    <i class="fas fa-gem"></i>
+                    <h3>Materiales Premium</h3>
+                    <p>Oro 18k, plata esterlina y gemas naturales</p>
+                </div>
+                <div class="feature-box">
+                    <i class="fas fa-award"></i>
+                    <h3>Garantía de Calidad</h3>
+                    <p>Certificados de autenticidad incluidos</p>
+                </div>
+                <div class="feature-box">
+                    <i class="fas fa-heart"></i>
+                    <h3>Hecho con Amor</h3>
+                    <p>Cada pieza es única y elaborada a mano</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="cart-modal" id="cart-modal">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h3>Tu Carrito</h3>
+                <span class="close-cart">&times;</span>
+            </div>
+            <div class="cart-body" id="cart-body">
+                <!-- Productos del carrito se cargarán aquí -->
+                <p class="empty-cart">Tu carrito está vacío</p>
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span id="cart-total">$0.00</span>
+                </div>
+                <button class="btn checkout-btn">Finalizar Compra</button>
+            </div>
+        </div>
+    </div>
+
+    <footer id="contacto">
+        <div class="container">
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <p><i class="fas fa-map-marker-alt"></i> Avenida Elegante 456, Ciudad</p>
+                <p><i class="fas fa-phone"></i> +1 234 567 890</p>
+                <p><i class="fas fa-envelope"></i> info@luxuryjewels.com</p>
+            </div>
+            <div class="footer-section">
+                <h3>Horario</h3>
+                <p>Lunes - Viernes: 10am - 8pm</p>
+                <p>Sábado: 11am - 6pm</p>
+                <p>Domingo: Cerrado</p>
+            </div>
+            <div class="footer-section">
+                <h3>Síguenos</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-pinterest"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2025 Luxury Jewels. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="db.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
