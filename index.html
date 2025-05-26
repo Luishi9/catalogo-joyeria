@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Luxury Jewels - Joyería Fina</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 </head>
+
 <body>
     <header>
         <div class="container">
@@ -21,14 +24,14 @@
                     <li><a href="#contacto">Contacto</a></li>
                 </ul>
             </nav>
-            
+
             <div class="cart-icon">
                 <!--
                 <i class="fas fa-shopping-cart"></i>
                 <span class="cart-count">0</span>
                 -->
             </div>
-            
+
             <div class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
             </div>
@@ -70,11 +73,15 @@
             <div class="container">
                 <div class="about-content">
                     <h2>Artesanía con Historia</h2>
-                    <p>En Luxury Jewels combinamos técnicas ancestrales con diseño contemporáneo para crear piezas que trascienden el tiempo. Cada joya es elaborada por maestros artesanos con los más altos estándares de calidad.</p>
-                    <p>Utilizamos metales preciosos y gemas certificadas, asegurando autenticidad y durabilidad en cada creación.</p>
+                    <p>En Luxury Jewels combinamos técnicas ancestrales con diseño contemporáneo para crear piezas que
+                        trascienden el tiempo. Cada joya es elaborada por maestros artesanos con los más altos
+                        estándares de calidad.</p>
+                    <p>Utilizamos metales preciosos y gemas certificadas, asegurando autenticidad y durabilidad en cada
+                        creación.</p>
                 </div>
                 <div class="about-image">
-                    <img src="https://images.unsplash.com/photo-1602173574767-37ac01994b2a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Artesano trabajando">
+                    <img src="https://images.unsplash.com/photo-1602173574767-37ac01994b2a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+                        alt="Artesano trabajando">
                 </div>
             </div>
         </section>
@@ -148,7 +155,42 @@
         </div>
     </footer>
 
-    <script src="db.js"></script>
-    <script src="script.js"></script>
+    
+    <script type="module" src="script.js"></script>
 </body>
+
+
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyBWnHAjESYjfe0evxdipMYHuj8DZziH7GE",
+        authDomain: "catalogo-5e529.firebaseapp.com",
+        projectId: "catalogo-5e529",
+        storageBucket: "catalogo-5e529.firebasestorage.app",
+        messagingSenderId: "485951596781",
+        appId: "1:485951596781:web:43ecaba21313efc78284e4"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+
+    const db = getFirestore(app);
+
+    // Obtener productos
+    const querySnapshot = await getDocs(collection(db, "productos"));
+    querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        console.log("Producto:", data);
+    });
+    
+</script>
+
 </html>

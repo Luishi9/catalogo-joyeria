@@ -1,4 +1,5 @@
 // Base de datos de productos de joyería
+/*
 const products = [
     {
         id: 1,
@@ -40,7 +41,36 @@ const products = [
         category: "anillos",
         image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
     },
-    
-
 ]
-    
+*/
+
+
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyBWnHAjESYjfe0evxdipMYHuj8DZziH7GE",
+    authDomain: "catalogo-5e529.firebaseapp.com",
+    projectId: "catalogo-5e529",
+    storageBucket: "catalogo-5e529.firebasestorage.app",
+    messagingSenderId: "485951596781",
+    appId: "1:485951596781:web:43ecaba21313efc78284e4"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+// Obtener productos
+const querySnapshot = await getDocs(collection(db, "productos"));
+querySnapshot.forEach((doc) => {
+    const data = doc.data();
+    console.log("Producto:", data);
+});
