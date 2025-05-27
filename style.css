@@ -459,8 +459,7 @@ header .container {
     color: var(--text-light);
     font-size: 0.9rem;
     margin-bottom: 20px;
-    height: 40px;
-    overflow: hidden;
+    height: auto;
 }
 
 .product-price {
