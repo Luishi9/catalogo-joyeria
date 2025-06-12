@@ -18,6 +18,7 @@ import { collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic
 // ===============================================
 const IMGBB_API_KEY = 'e56d73915e78e9f0acb547eb833f7d6d'; // <--- ¡REEMPLAZA CON TU API KEY REAL!
 const IMGBB_UPLOAD_URL = `https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`;
+const IMGBB_DELETE_URL = `https://api.imgbb.com/1/delete?key=${IMGBB_API_KEY}`;
 // ===============================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -38,11 +39,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const productDescription = document.getElementById('productDescription').value;
         const productPrice = parseFloat(document.getElementById('productPrice').value);
         const productCategory = document.getElementById('productCategory').value;
+        const productMaterial = document.getElementById('productMaterial').value;
 
         const imageFile = productImageInput.files[0]; // Obtiene el archivo de imagen seleccionado
 
         // Validaciones básicas (puedes añadir más)
-        if (!productName || !productDescription || isNaN(productPrice) || !imageFile || !productCategory) {
+        if (!productName || !productDescription || isNaN(productPrice) || !imageFile || !productCategory || !productMaterial) {
             showMessage('Por favor, completa todos los campos.', 'error');
             return;
         }
@@ -71,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const imageUrl = imgbbData.data.url; // La URL de la imagen está en imgbbData.data.url
+            const imageDeleteHash = imgbbData.data.deletehash || null;
             console.log('Imagen subida a ImgBB, URL:', imageUrl);
 
             // Añade el documento a la colección "productos" en Firestore
@@ -79,13 +82,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 description: productDescription,
                 price: productPrice,
                 image: imageUrl, // Usa la URL de la imagen subida
+                imageDeleteHash: imageDeleteHash, // Guarda el hash de eliminación de la imagen
                 category: productCategory,
+                material: productMaterial,
                 createdAt: new Date() // Opcional: marca de tiempo de creación
             });
 
             console.log("Producto añadido con ID: ", docRef.id);
             showMessage('Producto añadido con éxito!', 'success');
             productForm.reset(); // Limpia el formulario después de la inserción
+            renderProductosTable(); // Recargar la tabla
 
         } catch (error) {
             console.error("Error al añadir el producto:", error);
@@ -115,6 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <td>${producto.description}</td>
             <td>$${parseFloat(producto.price).toFixed(2)}</td>
             <td>${producto.category}</td>
+            <td>${producto.material || 'No disponible'}</td>
             <td><img src="${producto.image}" alt="${producto.name}" style="width: 50px; height: auto;"></td>            
             <td><button class="btn-eliminar" data-id="${productoId}">Eliminar</button></td>
         `;
@@ -128,8 +135,51 @@ document.addEventListener('DOMContentLoaded', () => {
                 const id = e.target.dataset.id;
 
                 if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
-                    await deleteDoc(doc(db, "productos", id));
-                    renderProductosTable(); // Volver a cargar tabla
+
+                    try{
+                        // 1. Obtener el documento de firestore para obtener el hash de eliminación
+                        const docRef = doc(db, "productos", id);
+                        const docSnap = await getDoc(docRef);
+
+                        if (docSnap.exists()) {
+                            const productoData = docSnap.data();
+                            const imageDeleteHash = productoData.imageDeleteHash; // Obtener el delete hash de la imagen
+
+                            if (imageDeleteHash) {
+                                // 2. eliminar la iamgen de ImgBB
+                                try {
+                                    const deleteImgbbResponse = await fetch(`${IMGBB_DELETE_URL}&deletehash=${imageDeleteHash}`, {
+                                        method: 'POST' // ImgBB usa POST para la eliminar por deletehash
+
+                                    });
+                                    const deleteImgbbData = await deleteImgbbResponse.json();
+
+                                    if (deleteImgbbResponse.ok && deleteImgbbData.success) {
+                                        console.log("Imagen eliminada de imgbb exitosamente");                                        
+                                    } else {
+                                        console.warn("Error al eleminar la imagen de ImgBB:", deleteImgbbData);
+                                    }
+                                } catch (imgbbError) {
+                                    console.log("Error de red al intentar eliminar la imagen de ImgBB:", imgbbError);
+                                }
+                            } else {
+                                console.warn("No se encontró el delete hash de la imagen para eliminarla de ImgBB.");
+                            }
+                        } else {
+                            console.warn("Documento no encontreado en Firestore para eliminar la imagen asociada.");
+                        }
+
+                        // 3. Eliminar el documento de Firestore
+                        await deleteDoc(doc(db, "productos", id));
+                        showMessage('Producto y su imagen (si existía) eliminados con éxito.', 'success');
+                        renderProductosTable(); // Volver a cargar tabla
+
+                    } catch (firestoreError) {
+                        console.error("Error al eliminar el producto de firestore:", firestoreError);
+                        showMessage('Error al eliminar el producto. Revisa la consola.', 'error');
+                        return;
+                    }
+
                 }
             });
         });
