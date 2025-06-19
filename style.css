@@ -191,6 +191,12 @@ header .container {
     transition: var(--transition);
 }
 
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
 .logo h1 {
     font-size: 2rem;
     color: var(--dark-color);
@@ -200,8 +206,28 @@ header .container {
 }
 
 .logo span {
-    color: var(--primary-color);
+    color: #4294d6;
     font-weight: 400;
+}
+
+/* Estilos para el contenedor de la imagen circular */
+.logo-img-container {
+    width: 50px;  /* Define el ancho del círculo (ajusta el tamaño deseado) */
+    height: 50px; /* Define el alto del círculo (debe ser igual al ancho) */
+    border-radius: 50%; /* Hace que el contenedor sea circular */
+    overflow: hidden; /* Recorta cualquier parte de la imagen que se salga del círculo */
+    display: flex; /* Asegura que la imagen dentro también se centre si es necesario */
+    justify-content: center; /* Centra horizontalmente la imagen dentro del círculo */
+    align-items: center; /* Centra verticalmente la imagen dentro del círculo */
+    /* border: 1px solid #ccc;  Opcional: puedes añadir un borde si quieres */
+}
+
+/* Estilos para la imagen dentro del círculo */
+.logo-img-container img {
+    width: 100%; /* Asegura que la imagen ocupe todo el ancho del contenedor */
+    height: 100%; /* Asegura que la imagen ocupe todo el alto del contenedor */
+    object-fit: cover; /* Recorta la imagen para que cubra el área sin distorsionarse */
+    display: block; /* Elimina cualquier espacio extra que pueda añadir el navegador por defecto a las imágenes */
 }
 
 .main-nav ul {
@@ -288,7 +314,7 @@ header .container {
 /* Hero section - Estilo Galería de Lujo */
 .hero {
     background: linear-gradient(var(--overlay-color), var(--overlay-color)), 
-                url('https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+                url('./src/img/azuljoyeria.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
