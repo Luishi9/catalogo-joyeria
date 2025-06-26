@@ -513,8 +513,8 @@ header .container {
 .product-category {
     display: inline-block;
     padding: 5px 15px;
-    background-color: var(--primary-color);
-    color: var(--dark-color);
+    background-color: #4294d6;
+    color: white;
     border-radius: 0;
     font-size: 0.75rem;
     margin-bottom: 15px;
@@ -950,7 +950,7 @@ footer:before {
     margin-bottom: 40px;
 }
 
-.footer-section h3 {
+.footer-section h2 {
     margin-bottom: 25px;
     font-size: 1.3rem;
     letter-spacing: 2px;
@@ -959,7 +959,7 @@ footer:before {
     display: inline-block;
 }
 
-.footer-section h3:after {
+.footer-section h2:after {
     content: '';
     position: absolute;
     bottom: -8px;
@@ -971,6 +971,7 @@ footer:before {
 
 .footer-section p {
     margin-bottom: 15px;
+    font-size: 25px;
     display: flex;
     align-items: center;
     font-weight: 300;
@@ -979,7 +980,6 @@ footer:before {
 
 .footer-section i {
     margin-right: 12px;
-    color: var(--primary-color);
     width: 20px;
     text-align: center;
 }
@@ -990,11 +990,12 @@ footer:before {
 }
 
 .social-icons a {
-    color: white;
-    font-size: 1.1rem;
+    text-decoration: none;
+    color: black;
     transition: var(--transition);
-    width: 40px;
-    height: 40px;
+
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
     border: 1px solid rgba(255, 255, 255, 0.2);
     display: flex;
@@ -1002,8 +1003,29 @@ footer:before {
     justify-content: center;
 }
 
+.social-icons i {
+    font-size: 50px;
+    transition: var(--transition);
+
+    /* --- ESTILOS PARA CREAR EL CÍRCULO DORADO INTERNO --- */
+    display: flex; /* Habilita Flexbox para el icono */
+    align-items: center; /* Centra el *símbolo* del icono verticalmente dentro de su propio contenedor */
+    justify-content: center; /* Centra el *símbolo* del icono horizontalmente dentro de su propio contenedor */
+
+    background-color: var(--primary-color); /* Fondo dorado para el círculo interno */
+    border-radius: 50%; /* Hace el fondo del icono circular */
+    
+    /* Define el tamaño del CÍRCULO DORADO */
+    /* Este tamaño debe ser menor que el width/height del 'a' (ej. 80px si el 'a' es 100px) */
+    width: 80px; /* Ajusta este valor para el tamaño del círculo dorado */
+    height: 80px; /* Debe ser igual al width */
+
+    padding: 0;
+    margin: 0;
+    line-height: 1;
+}
+
 .social-icons a:hover {
-    color: var(--primary-color);
     border-color: var(--primary-color);
     transform: translateY(-5px);
 }
