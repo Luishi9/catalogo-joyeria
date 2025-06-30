@@ -314,7 +314,7 @@ header .container {
 /* Hero section - Estilo Galería de Lujo */
 .hero {
     background: linear-gradient(var(--overlay-color), var(--overlay-color)), 
-                url('./src/img/azuljoyeria.jpg');
+                url('./src/img/fondo.jpg'), no-repeat;
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
