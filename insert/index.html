@@ -93,7 +93,6 @@
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
-
     </style>
 </head>
 
@@ -177,6 +176,60 @@
             </div>
 
         </section>
+
+        <section>
+            <div class="container text-center">
+                <h2>Agregar informacion de piedra.</h2>
+
+                <div class="form-container">
+                    <form id="piedrasForm">
+                        <div class="form-group">
+                            <label for="nombrePiedra">Nombre de la Piedra:</label>
+                            <input type="text" id="nombrePiedra" required>
+
+                        </div>
+                        <div class="form-group">
+                            <label for="infoPiedra">Informacion de la Piedra:</label>
+                            <textarea id="infoPiedra" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="piedraImage" class="form-label">Imagen de la piedra</label>
+                            <input class="form-control" type="file" id="piedraImage" accept="image/*" required>
+
+                        </div>
+                          <div class="form-group">
+                            <button type="submit" class="btn">Agregar Producto</button>
+                        </div>
+                    </form>
+                    <div id="message2Container" class="message" style="display: none;"></div>
+                </div>
+            </div>
+        </section>
+
+         <section>
+            <div class="container mb-5">
+
+                <h2>Listado de productos.</h2>
+
+                <table id="piedras-table" class="table table-striped table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Informacion</th>
+                            <th>Imagen</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="piedras-body">
+                        <!-- Las piedras se cargarán dinámicamente aquí -->
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
     </main>
 
     <script type="module" src="script.js"></script>

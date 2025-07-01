@@ -147,6 +147,61 @@ h1, h2, h3, h4, h5, h6 {
     width: 100%;
 }
 
+
+/**************************/
+.btn-eliminar-piedra {
+    display: inline-block;
+    background-color: var(--eliminar-color);
+    color: white;
+    padding: 14px 32px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: var(--transition);
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn-eliminar-piedra:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--dark-color);
+    z-index: -2;
+}
+
+.btn-eliminar-piedra:before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    background-color: var(--eliminar-color);
+    transition: var(--transition);
+    z-index: -1;
+}
+
+.btn-eliminar-piedra:hover {
+    color: var(--eliminar-color);
+    color: white;
+    transform: translateY(-3px);
+}
+
+.btn-eliminar-piedra:hover:before {
+    width: 100%;
+}
+
+
 .section-title {
     font-size: 2.5rem;
     margin-bottom: 1.5rem;
@@ -437,6 +492,16 @@ header .container {
 .category-btn.active {
     background-color: var(--dark-color);
     color: var(--primary-color);
+}
+
+.piedras {
+    padding: 100px 0;
+    background-color: var(--light-color);
+}
+
+.piedras h2 {
+    text-align: center;
+    margin-bottom: 60px;
 }
 
 /* Products Grid - Galería de productos de lujo */

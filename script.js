@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const materialSelectFilter = document.getElementById('material-select-filter');
 
+    const piedrasGrid = document.getElementById('piedras-grid');
+
     // Estado actual de los filtros
     let currentCategoryFilter = 'all';
     let currentMaterialFilter = 'all';
@@ -173,7 +175,49 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+
+    // Renderizar piedras e informacion desde FireStore
+    async function renderPiedras() {
+        piedrasGrid.innerHTML = '';
+
+        try {
+            const querySnapshot = await getDocs(collection(db, "piedras"));
+            let piedras = [];
+
+            querySnapshot.forEach((doc) => {
+                piedras.push({ id: doc.id, ...doc.data() });
+            });
+
+            piedras.forEach(piedra => {
+                const piedraCard = document.createElement('div');
+                piedraCard.className = 'card piedra-card';
+                piedraCard.innerHTML = `
+
+                 
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <img src="${piedra.image}" class="img-fluid rounded-start" alt="${piedra.name}">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title">${piedra.nombre}</h5>
+                                    <p class="card-text">${piedra.info || 'No description available.'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    
+                    
+                `;
+                piedrasGrid.appendChild(piedraCard);
+            });
+        } catch (error) {
+            console.error("Error al obtener piedras desde Firestore:", error);
+            piedrasGrid.innerHTML = '<p class="error">No se pudieron cargar las piedras.</p>';
+        }
+    }
+
     // Inicializar: cargar filtros de material y renderizar productos
     loadMaterialFilters();
     renderProducts(); // Llama a renderProducts sin argumentos, usará los filtros globales 'all'
+    renderPiedras(); // Llama a renderPiedras para cargar las piedras
 });
