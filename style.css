@@ -1,5 +1,7 @@
 /* Estilos generales - Versión Luxury */
 :root {
+    --azul-color: #00b4d8; /* Azul */
+    --azul-h1: #caf0f8; /* Azul para letras inicio */
     --primary-color: #d4af37; /* Oro */
     --secondary-color: #e5e5e5; /* Plata clara */
     --dark-color: #0a0a0a; /* Negro profundo */
@@ -1012,7 +1014,7 @@ footer:before {
     align-items: center; /* Centra el *símbolo* del icono verticalmente dentro de su propio contenedor */
     justify-content: center; /* Centra el *símbolo* del icono horizontalmente dentro de su propio contenedor */
 
-    background-color: var(--primary-color); /* Fondo dorado para el círculo interno */
+    background-color: var(--azul-color); /* Fondo dorado para el círculo interno */
     border-radius: 50%; /* Hace el fondo del icono circular */
     
     /* Define el tamaño del CÍRCULO DORADO */
@@ -1026,7 +1028,7 @@ footer:before {
 }
 
 .social-icons a:hover {
-    border-color: var(--primary-color);
+    border-color: var(--azul-color);
     transform: translateY(-5px);
 }
 
