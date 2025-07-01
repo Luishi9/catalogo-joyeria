@@ -192,8 +192,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 const piedraCard = document.createElement('div');
                 piedraCard.className = 'card piedra-card';
                 piedraCard.innerHTML = `
-
-                 
                         <div class="row g-0">
                             <div class="col-md-4">
                                 <img src="${piedra.image}" class="img-fluid rounded-start" alt="${piedra.name}">
@@ -205,8 +203,6 @@ document.addEventListener('DOMContentLoaded', function () {
                                 </div>
                             </div>
                         </div>
-                    
-                    
                 `;
                 piedrasGrid.appendChild(piedraCard);
             });
