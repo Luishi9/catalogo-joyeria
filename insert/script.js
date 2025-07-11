@@ -4,7 +4,7 @@
 import { db } from '../db.js';
 
 // Importa las funciones necesarias de Firestore
-import { collection, addDoc, getDocs, deleteDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+import { collection, addDoc, getDocs, deleteDoc, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
 // IMPORTA LAS FUNCIONES NECESARIAS DE FIREBASE STORAGE
 //import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-storage.js"; 
@@ -132,7 +132,18 @@ const imageId = imgbbData.data.id; // Obtener el ID de la imagen
             row.innerHTML = `
             <td>${producto.name}</td>
             <td>${producto.description}</td>
-            <td>$${parseFloat(producto.price).toFixed(2)}</td>
+            <td class="price-cell">
+                <input type="number"
+                       id="price-input-${productoId}"
+                       value="${parseFloat(producto.price).toFixed(2)}"
+                       step="0.01"
+                       min="0"
+                       class="form-control form-control-sm"
+                       style="width: 100px; display: inline-block;">
+                <button class="btn btn-primary btn-sm btn-guardar-precio"
+                       data-id="${productoId}"
+                       style="margin-left: 5px;">Guardar</button>
+            </td>
             <td>${producto.category}</td>
             <td>${producto.material || 'No disponible'}</td>
             <td><img src="${producto.image}" alt="${producto.name}" style="width: 50px; height: auto;"></td>            
@@ -194,6 +205,37 @@ const imageId = imgbbData.data.id; // Obtener el ID de la imagen
                         return;
                     }
 
+                }
+            });
+        });
+
+        // =======================================================
+        // Agregar evento a cada botón de guardar precio
+        // =======================================================
+        document.querySelectorAll('.btn-guardar-precio').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const id = e.target.dataset.id;
+                const priceInput = document.getElementById(`price-input-${id}`);
+                const newPrice = parseFloat(priceInput.value);
+
+                if (isNaN(newPrice) || newPrice < 0) {
+                    alert('Por favor, ingresa un precio válido.');
+                    return;
+                }
+
+                try {
+                    // Actualizar el precio en Firestore
+                    const docRef = doc(db, "productos", id);
+                    await updateDoc(docRef, { 
+                        price: newPrice // Actualzar el precio
+                    });
+
+                    showMessage('Precio actualizado con éxito.', 'success');
+                    renderProductosTable(); // Volver a cargar tabla
+
+                } catch (error) {
+                    console.error("Error al actualizar el precio:", error);
+                    showMessage('Error al actualizar el precio. Revisa la consola.', 'error');
                 }
             });
         });
