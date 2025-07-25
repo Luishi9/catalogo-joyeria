@@ -504,6 +504,16 @@ header .container {
     margin-bottom: 60px;
 }
 
+/* ================================================= */
+.piedra-card img{
+    width: 200px;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ================================================= */
+
+
 /* Products Grid - Galería de productos de lujo */
 .products {
     padding: 100px 0;

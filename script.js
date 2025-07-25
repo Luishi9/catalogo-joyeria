@@ -193,10 +193,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 piedraCard.className = 'card piedra-card';
                 piedraCard.innerHTML = `
                         <div class="row g-0">
-                            <div class="col-md-4">
+                            <div class="col-md-2 text-center">
                                 <img src="${piedra.image}" class="img-fluid rounded-start" alt="${piedra.name}">
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-10">
                                 <div class="card-body">
                                     <h5 class="card-title">${piedra.nombre}</h5>
                                     <p class="card-text">${piedra.info || 'No description available.'}</p>
