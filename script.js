@@ -1,4 +1,4 @@
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+import { collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 import { db } from './db.js'; // Asegúrate de que la ruta sea correcta
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -181,9 +181,13 @@ document.addEventListener('DOMContentLoaded', function () {
         piedrasGrid.innerHTML = '';
 
         try {
-            const querySnapshot = await getDocs(collection(db, "piedras"));
-            let piedras = [];
 
+            // == Ordenar por Nombre ==
+            const piedrasCollection = query(collection(db, "piedras"), orderBy("nombre", "asc"));
+
+            const querySnapshot = await getDocs(piedrasCollection);
+            
+            let piedras = [];
             querySnapshot.forEach((doc) => {
                 piedras.push({ id: doc.id, ...doc.data() });
             });
