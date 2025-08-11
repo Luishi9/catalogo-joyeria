@@ -177,10 +177,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     
     // Renderizar piedras e informacion desde FireStore
-
     // Asegúrate de que 'piedrasGrid' y 'showMoreBtn' estén definidos
     const showMoreBtn = document.getElementById('show-more-piedras-btn');
-
     async function renderPiedras() {
         piedrasGrid.innerHTML = '';
         showMoreBtn.style.display = 'none'; // Ocultar el botón al inicio
@@ -202,10 +200,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-
-            piedras.forEach(piedra => {
+            piedras.forEach((piedra, index) => {
                 const piedraCard = document.createElement('div');
-                piedraCard.className = `card piedra-card ${index >= 3 ? 'hidden-card' : ''}`;
+                piedraCard.className = `card mb-3 piedra-card ${index >= 3 ? 'hidden-card' : ''}`;
 
                 piedraCard.innerHTML = `
                         <div class="row g-0">

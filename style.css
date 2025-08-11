@@ -511,7 +511,7 @@ header .container {
     align-items: center;
 }
 
-.hidden-card {
+.piedras-grid .hidden-card {
     display: none;
 }
 
