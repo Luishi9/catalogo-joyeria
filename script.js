@@ -175,8 +175,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-
+    
     // Renderizar piedras e informacion desde FireStore
+
+    // Asegúrate de que 'piedrasGrid' y 'showMoreBtn' estén definidos
+    const showMoreBtn = document.getElementById('show-more-piedras-btn');
+
     async function renderPiedras() {
         piedrasGrid.innerHTML = '';
         showMoreBtn.style.display = 'none'; // Ocultar el botón al inicio
