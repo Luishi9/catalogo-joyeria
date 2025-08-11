@@ -179,6 +179,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Renderizar piedras e informacion desde FireStore
     async function renderPiedras() {
         piedrasGrid.innerHTML = '';
+        showMoreBtn.style.display = 'none'; // Ocultar el botón al inicio
 
         try {
 
@@ -192,9 +193,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 piedras.push({ id: doc.id, ...doc.data() });
             });
 
+            if (piedras.length === 0) {
+                piedrasGrid.innerHTML = '<p>No hay piedras para mostrar.</p>';
+                return;
+            }
+
+
             piedras.forEach(piedra => {
                 const piedraCard = document.createElement('div');
-                piedraCard.className = 'card piedra-card';
+                piedraCard.className = `card piedra-card ${index >= 3 ? 'hidden-card' : ''}`;
+
                 piedraCard.innerHTML = `
                         <div class="row g-0">
                             <div class="col-md-2 text-center">
@@ -210,6 +218,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 `;
                 piedrasGrid.appendChild(piedraCard);
             });
+
+            // Si hay más de 3 piedras, muestra el botón y configura el evento
+            if (piedras.length > 3) {
+                showMoreBtn.style.display = 'block';
+
+                // Agrega el evento para mostrar todas las tarjetas al hacer clic
+                showMoreBtn.onclick = () => {
+                    document.querySelectorAll('.hidden-card').forEach(card => {
+                        card.classList.remove('hidden-card');
+                    });
+                    showMoreBtn.style.display = 'none'; // Oculta el botón después de usarse
+                };
+            }
         } catch (error) {
             console.error("Error al obtener piedras desde Firestore:", error);
             piedrasGrid.innerHTML = '<p class="error">No se pudieron cargar las piedras.</p>';
