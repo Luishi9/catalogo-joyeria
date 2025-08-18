@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const imageUrl = imgbbData.data.url; // La URL de la imagen está en imgbbData.data.url
-const imageId = imgbbData.data.id; // Obtener el ID de la imagen
+            const imageId = imgbbData.data.id; // Obtener el ID de la imagen
             let imageDeleteToken; // Usaremos 'imageDeleteToken' para ser consistentes con la doc
 
             // --- PARA EL FORMULARIO DE PRODUCTOS ---
@@ -118,6 +118,11 @@ const imageId = imgbbData.data.id; // Obtener el ID de la imagen
         messageContainer.style.display = 'block';
     }
 
+    function showMessageProductos(msg, type) {
+        messageProductos.textContent = msg;
+        messageProductos.classList.add(type);
+        messageProductos.style.display = 'block';
+    }
 
     async function renderProductosTable() {
         const tableBody = document.querySelector("#productos-table tbody");
@@ -130,8 +135,12 @@ const imageId = imgbbData.data.id; // Obtener el ID de la imagen
             const row = document.createElement("tr");
 
             row.innerHTML = `
-            <td>${producto.name}</td>
-            <td>${producto.description}</td>
+            <td>
+                <textarea id="name-input-${productoId}" class="form-control form-control-sm">${producto.name}</textarea>
+            </td>
+            <td>
+                <textarea id="description-input-${productoId}" class="form-control form-control-sm">${producto.description}</textarea>
+            </td>
             <td class="price-cell">
                 <input type="number"
                        id="price-input-${productoId}"
@@ -144,10 +153,23 @@ const imageId = imgbbData.data.id; // Obtener el ID de la imagen
                        data-id="${productoId}"
                        style="margin-left: 5px;">Guardar</button>
             </td>
-            <td>${producto.category}</td>
-            <td>${producto.material || 'No disponible'}</td>
-            <td><img src="${producto.image}" alt="${producto.name}" style="width: 50px; height: auto;"></td>            
-            <td><button class="btn-eliminar" data-id="${productoId}">Eliminar</button></td>
+            <td>
+                 <select id="category-input-${productoId}" class="form-select form-select-sm">
+                    <option value="collares" ${producto.category === 'collares' ? 'selected' : ''}>Collares</option>
+                    <option value="pulseras" ${producto.category === 'pulseras' ? 'selected' : ''}>Pulseras</option>
+                    <option value="pendientes" ${producto.category === 'pendientes' ? 'selected' : ''}>Pendientes</option>
+                    <option value="otros" ${producto.category === 'otros' ? 'selected' : ''}>Otros</option>
+                </select>                
+            </td>
+            <td>
+                <input type="text" id="material-input-${productoId}" value="${producto.material || ''}" class="form-control form-control-sm">
+            </td>
+            <td><img src="${producto.image}" alt="${producto.name}" style="width: 50px; height: auto;"></td>   
+
+            <td>
+                <button class="btn btn-success btn-sm btn-actualizar" data-id="${productoId}">Actualizar</button>
+                <button class="btn-eliminar btn-sm" data-id="${productoId}">Eliminar</button>
+            </td>
         `;
 
             tableBody.appendChild(row);
@@ -196,12 +218,12 @@ const imageId = imgbbData.data.id; // Obtener el ID de la imagen
 
                         // 3. Eliminar el documento de Firestore
                         await deleteDoc(doc(db, "productos", id));
-                        showMessage('Producto y su imagen (si existía) eliminados con éxito.', 'success');
+                        showMessageProductos('Producto y su imagen (si existía) eliminados con éxito.', 'success');
                         renderProductosTable(); // Volver a cargar tabla
 
                     } catch (firestoreError) {
                         console.error("Error al eliminar el producto de firestore:", firestoreError);
-                        showMessage('Error al eliminar el producto. Revisa la consola.', 'error');
+                        showMessageProductos('Error al eliminar el producto. Revisa la consola.', 'error');
                         return;
                     }
 
@@ -226,16 +248,62 @@ const imageId = imgbbData.data.id; // Obtener el ID de la imagen
                 try {
                     // Actualizar el precio en Firestore
                     const docRef = doc(db, "productos", id);
-                    await updateDoc(docRef, { 
+                    await updateDoc(docRef, {
                         price: newPrice // Actualzar el precio
                     });
 
-                    showMessage('Precio actualizado con éxito.', 'success');
+                    showMessageProductos('Precio actualizado con éxito.', 'success');
                     renderProductosTable(); // Volver a cargar tabla
 
                 } catch (error) {
                     console.error("Error al actualizar el precio:", error);
-                    showMessage('Error al actualizar el precio. Revisa la consola.', 'error');
+                    showMessageProductos('Error al actualizar el precio. Revisa la consola.', 'error');
+                }
+            });
+        });
+
+        // =======================================================
+        // Agregar evento a cada botón de actualizar
+        // =======================================================
+        document.querySelectorAll('.btn-actualizar').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const id = e.target.dataset.id;
+
+                // Obtener los valores de los inputs
+                const newName = document.getElementById(`name-input-${id}`).value;
+                const newDescription = document.getElementById(`description-input-${id}`).value;
+                const newPrice = parseFloat(document.getElementById(`price-input-${id}`).value);
+                const newCategory = document.getElementById(`category-input-${id}`).value;
+                const newMaterial = document.getElementById(`material-input-${id}`).value;
+
+                // Validar los datos
+                if (isNaN(newPrice) || newPrice < 0 || !newName.trim() || !newDescription.trim() || !newCategory.trim()) {
+                    showMessageProductos('Por favor, completa todos los campos de forma correcta.', 'error');
+                    return;
+                }
+
+                try {
+                    // Referencia al documento en Firestore
+                    const docRef = doc(db, "productos", id);
+
+                    // Objeto con los datos a actualizar
+                    const updatedData = {
+                        name: newName,
+                        description: newDescription,
+                        price: newPrice,
+                        category: newCategory,
+                        material: newMaterial
+                    };
+
+                    // Usar updateDoc para actualizar los campos
+                    await updateDoc(docRef, updatedData);
+
+                    showMessageProductos('Producto actualizado con éxito.', 'success');
+                    // Opcional: Volver a cargar la tabla para reflejar los cambios
+                    // renderProductosTable();
+                } catch (error) {
+                    console.error("Error al actualizar el producto:", error);
+                    showMessageProductos('Error al actualizar el producto. Revisa la consola.', 'error');
                 }
             });
         });
@@ -324,7 +392,7 @@ const imageId = imgbbData.data.id; // Obtener el ID de la imagen
         }
     });
 
-     function showMessage2(msg, type) {
+    function showMessage2(msg, type) {
         message2Container.textContent = msg;
         message2Container.classList.add(type);
         message2Container.style.display = 'block';
