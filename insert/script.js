@@ -4,7 +4,7 @@
 import { db } from '../db.js';
 
 // Importa las funciones necesarias de Firestore
-import { collection, addDoc, getDocs, deleteDoc, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+import { collection, addDoc, getDocs, deleteDoc, doc, getDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
 // IMPORTA LAS FUNCIONES NECESARIAS DE FIREBASE STORAGE
 //import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-storage.js"; 
@@ -122,6 +122,12 @@ document.addEventListener('DOMContentLoaded', () => {
         messageProductos.textContent = msg;
         messageProductos.classList.add(type);
         messageProductos.style.display = 'block';
+    }
+
+     function showMessagePiedras(msg, type) {
+        messagePiedras.textContent = msg;
+        messagePiedras.classList.add(type);
+        messagePiedras.style.display = 'block';
     }
 
     async function renderProductosTable() {
@@ -402,21 +408,42 @@ document.addEventListener('DOMContentLoaded', () => {
         const piedrasTableBody = document.querySelector("#piedras-table tbody");
         piedrasTableBody.innerHTML = ''; // Limpiar tabla
 
-        const querySnapshot = await getDocs(collection(db, "piedras"));
-        querySnapshot.forEach((documento) => {
+        try{
+            // === CAMBIO AQUÍ ===
+            // 1. Crear una consulta con la función `query`
+            // 2. Usar `orderBy` para ordenar por el campo 'nombre' de forma ascendente
+            const piedrasQuery = query(collection(db, "piedras"), orderBy("nombre", "asc"));
+
+            // ejecutar la consulta
+            const querySnapshot = await getDocs(piedrasQuery);
+
+            querySnapshot.forEach((documento) => {
             const piedra = documento.data();
             const piedraId = documento.id; // Obtener el ID del documento
             const row = document.createElement("tr");
 
             row.innerHTML = `
-            <td>${piedra.nombre}</td>
-            <td>${piedra.info}</td>
-            <td><img src="${piedra.image}" alt="${piedra.nombre}" style="width: 50px; height: auto;"></td>            
-            <td><button class="btn-eliminar-piedra" data-id="${piedraId}">Eliminar</button></td>
-        `;
+                <td>
+                    <input type="text" id="nombre-input-${piedraId}" value="${piedra.nombre}" class="form-control">
+                </td>
+                <td>
+                    <textarea id="info-input-${piedraId}" class="form-control form-control-sm">${piedra.info}</textarea>
+                </td>
+                <td><img src="${piedra.image}" alt="${piedra.nombre}" style="width: 50px; height: auto;"></td>          
+                <td>
+                    <button class="btn btn-success btn-sm btn-actualizar-piedra" data-id="${piedraId}">Actualizar</button>
+                    <button class="btn btn-danger btn-sm btn-eliminar-piedra" data-id="${piedraId}">Eliminar</button>
+                </td>
+            `;
 
-            piedrasTableBody.appendChild(row);
-        });
+                piedrasTableBody.appendChild(row);
+            });
+        
+
+        } catch (error) {
+            console.error("Error al obtener piedras desde Firestore:", error);
+            // Manejo de errores adicional si es necesario
+        }       
 
         document.querySelectorAll('.btn-eliminar-piedra').forEach(btn => {
             btn.addEventListener('click', async (e) => {
@@ -460,15 +487,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         // 3. Eliminar el documento de Firestore
                         await deleteDoc(doc(db, "piedras", id));
-                        showMessage('Producto y su imagen (si existía) eliminados con éxito.', 'success');
+                        showMessagePiedras('Producto y su imagen (si existía) eliminados con éxito.', 'success');
                         renderPiedrasTable(); // Volver a cargar tabla
 
                     } catch (firestoreError) {
                         console.error("Error al eliminar el producto de firestore:", firestoreError);
-                        showMessage('Error al eliminar el producto. Revisa la consola.', 'error');
+                        showMessagePiedras('Error al eliminar el producto. Revisa la consola.', 'error');
                         return;
                     }
 
+                }
+            });
+        });
+
+        // =======================================================
+        // Agregar evento a cada botón de actualizar piedra
+        // =======================================================
+        document.querySelectorAll('.btn-actualizar-piedra').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const id = e.target.dataset.id;
+
+                // Obtener los valores de los inputs
+                const nuevoNombre = document.getElementById(`nombre-input-${id}`).value;
+                const nuevaInfo = document.getElementById(`info-input-${id}`).value;
+
+                // Validar los datos
+                if (!nuevoNombre.trim() || !nuevaInfo.trim()) {
+                    showMessagePiedras('Por favor, completa todos los campos.', 'error');
+                    return;
+                }
+
+                try {
+                    // Referencia al documento en Firestore
+                    const docRef = doc(db, "piedras", id);
+
+                    // Objeto con los datos a actualizar
+                    const updatedData = {
+                        nombre: nuevoNombre,
+                        info: nuevaInfo
+                    };
+
+                    // Usar updateDoc para actualizar los campos
+                    await updateDoc(docRef, updatedData);
+
+                    showMessagePiedras('Piedra actualizada con éxito.', 'success');
+                    // Opcional: Volver a cargar la tabla para reflejar los cambios
+                    // renderPiedrasTable();
+                } catch (error) {
+                    console.error("Error al actualizar la piedra:", error);
+                    showMessagePiedras('Error al actualizar la piedra. Revisa la consola.', 'error');
                 }
             });
         });
