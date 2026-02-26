@@ -221,27 +221,21 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Header - Estilo Luxury */
-/* Banner informativo fijo */
+/* Banner informativo */
 .info-banner {
     background-color: #1a1a2e;
     color: #caf0f8;
     text-align: center;
-    padding: 10px 0;
-    position: fixed;
-    width: 100%;
-    top: 0;
-    z-index: 1100;
-    font-size: 0.85rem;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    font-size: 0.9rem;
     letter-spacing: 0.3px;
-    transition: transform 0.3s ease;
-}
-
-.info-banner .container {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 15px;
-    padding: 0 30px;
+    transition: opacity 0.3s ease, max-height 0.3s ease;
 }
 
 .info-banner p {
@@ -270,7 +264,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .info-banner.hidden {
-    transform: translateY(-100%);
+    display: none;
 }
 
 header {
