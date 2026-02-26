@@ -12,6 +12,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const piedrasGrid = document.getElementById('piedras-grid');
 
+    const showMoreProductsBtn = document.getElementById('show-more-products-btn');
+    const showMoreProductsContainer = document.getElementById('show-more-products-container');
+    const INITIAL_VISIBLE_PRODUCTS = 6;
+
     // Estado actual de los filtros
     let currentCategoryFilter = 'all';
     let currentMaterialFilter = 'all';
@@ -111,6 +115,17 @@ document.addEventListener('DOMContentLoaded', function () {
         renderProducts(); // Renderiza los productos con el nuevo filtro
     });
 
+    // =========================================================================
+    // === EVENT LISTENER para el botón "Mostrar más" de productos ===
+    // =========================================================================
+    showMoreProductsBtn.addEventListener('click', () => {
+        const hiddenCards = document.querySelectorAll('.hidden-product-card');
+        hiddenCards.forEach(card => {
+            card.classList.remove('hidden-product-card');
+        });
+        showMoreProductsContainer.style.display = 'none';
+    });
+
 
     // Renderizar productos desde Firestore
     // Ya no acepta parámetros, usa las variables de estado globales
@@ -147,10 +162,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (filteredProducts.length === 0) {
                 productGrid.innerHTML = '<p class="no-products-message">No se encontraron productos que coincidan con los filtros.</p>';
+                showMoreProductsContainer.style.display = 'none';
             } else {
-                filteredProducts.forEach(product => {
+                filteredProducts.forEach((product, index) => {
                     const productCard = document.createElement('div');
                     productCard.className = 'card text-center product-card';
+                    // Ocultar cards después de las primeras 6
+                    if (index >= INITIAL_VISIBLE_PRODUCTS) {
+                        productCard.classList.add('hidden-product-card');
+                    }
                     productCard.innerHTML = `
                         <div class="card-header product-img skeleton-loader">
                             <img src="${product.image}" alt="${product.name}" loading="lazy" decoding="async" onload="this.classList.add('loaded'); this.parentElement.classList.remove('skeleton-loader');">
@@ -167,6 +187,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     `;
                     productGrid.appendChild(productCard);
                 });
+
+                // Mostrar u ocultar el botón "Mostrar más"
+                if (filteredProducts.length > INITIAL_VISIBLE_PRODUCTS) {
+                    showMoreProductsContainer.style.display = 'block';
+                    showMoreProductsBtn.textContent = 'Mostrar más';
+                } else {
+                    showMoreProductsContainer.style.display = 'none';
+                }
             }
 
 
