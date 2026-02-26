@@ -152,10 +152,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     const productCard = document.createElement('div');
                     productCard.className = 'card text-center product-card';
                     productCard.innerHTML = `
-                        <div class="product-img skeleton-loader">
+                        <div class="card-header product-img skeleton-loader">
                             <img src="${product.image}" alt="${product.name}" loading="lazy" decoding="async" onload="this.classList.add('loaded'); this.parentElement.classList.remove('skeleton-loader');">
                         </div>
-                        <div class="product-info">
+                        <div class="card-body product-info">
                             <span class="product-category ${product.category}">${product.category}</span>
                             <h3 class="product-title">${product.name}</h3>
                             <p class="product-desc">${product.description}</p>
@@ -163,6 +163,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <div class="card-footer text-body-secondary">
                             <p class="product-material">Material: ${product.material || 'No especificado'}</p>
                         </div>
+                    </div>
                     `;
                     productGrid.appendChild(productCard);
                 });
