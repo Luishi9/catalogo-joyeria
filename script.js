@@ -152,15 +152,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     const productCard = document.createElement('div');
                     productCard.className = 'product-card';
                     productCard.innerHTML = `
-                        <div class="product-img">
-                            <img src="${product.image}" alt="${product.name}">
+                        <div class="product-img skeleton-loader">
+                            <img src="${product.image}" alt="${product.name}" loading="lazy" decoding="async" onload="this.classList.add('loaded'); this.parentElement.classList.remove('skeleton-loader');">
                         </div>
                         <div class="product-info">
                             <span class="product-category ${product.category}">${product.category}</span>
                             <h3 class="product-title">${product.name}</h3>
                             <p class="product-desc">${product.description}</p>
                             <p class="product-material">Material: ${product.material || 'No especificado'}</p>
-                            <div class="product-price">$${parseFloat(product.price).toFixed(2)}</div>
                             <div class="product-actions"></div>
                         </div>
                     `;
@@ -207,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 piedraCard.innerHTML = `
                         <div class="row g-0">
                             <div class="col-md-2 text-center">
-                                <img src="${piedra.image}" class="img-fluid rounded-start" alt="${piedra.name}">
+                                <img src="${piedra.image}" class="img-fluid rounded-start" alt="${piedra.name}" loading="lazy" decoding="async">
                             </div>
                             <div class="col-md-10">
                                 <div class="card-body">

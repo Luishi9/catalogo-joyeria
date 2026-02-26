@@ -38,14 +38,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Recopila los datos del formulario
         const productName = document.getElementById('productName').value;
         const productDescription = document.getElementById('productDescription').value;
-        const productPrice = parseFloat(document.getElementById('productPrice').value);
         const productCategory = document.getElementById('productCategory').value;
         const productMaterial = document.getElementById('productMaterial').value;
 
         const imageFile = productImageInput.files[0]; // Obtiene el archivo de imagen seleccionado
 
         // Validaciones básicas (puedes añadir más)
-        if (!productName || !productDescription || isNaN(productPrice) || !imageFile || !productCategory || !productMaterial) {
+        if (!productName || !productDescription || !imageFile || !productCategory || !productMaterial) {
             showMessage('Por favor, completa todos los campos.', 'error');
             return;
         }
@@ -92,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const docRef = await addDoc(collection(db, "productos"), {
                 name: productName,
                 description: productDescription,
-                price: productPrice,
                 image: imageUrl, // Usa la URL de la imagen subida
                 imageId: imageId, // ¡Guardar el ID!
                 imageDeleteToken: imageDeleteToken, // ¡Guardar el Token!
@@ -146,18 +144,6 @@ document.addEventListener('DOMContentLoaded', () => {
             </td>
             <td>
                 <textarea id="description-input-${productoId}" class="form-control form-control-sm">${producto.description}</textarea>
-            </td>
-            <td class="price-cell">
-                <input type="number"
-                       id="price-input-${productoId}"
-                       value="${parseFloat(producto.price).toFixed(2)}"
-                       step="0.01"
-                       min="0"
-                       class="form-control form-control-sm"
-                       style="width: 100px; display: inline-block;">
-                <button class="btn btn-primary btn-sm btn-guardar-precio"
-                       data-id="${productoId}"
-                       style="margin-left: 5px;">Guardar</button>
             </td>
             <td>
                  <select id="category-input-${productoId}" class="form-select form-select-sm">
@@ -238,37 +224,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // =======================================================
-        // Agregar evento a cada botón de guardar precio
-        // =======================================================
-        document.querySelectorAll('.btn-guardar-precio').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const id = e.target.dataset.id;
-                const priceInput = document.getElementById(`price-input-${id}`);
-                const newPrice = parseFloat(priceInput.value);
-
-                if (isNaN(newPrice) || newPrice < 0) {
-                    alert('Por favor, ingresa un precio válido.');
-                    return;
-                }
-
-                try {
-                    // Actualizar el precio en Firestore
-                    const docRef = doc(db, "productos", id);
-                    await updateDoc(docRef, {
-                        price: newPrice // Actualzar el precio
-                    });
-
-                    showMessageProductos('Precio actualizado con éxito.', 'success');
-                    renderProductosTable(); // Volver a cargar tabla
-
-                } catch (error) {
-                    console.error("Error al actualizar el precio:", error);
-                    showMessageProductos('Error al actualizar el precio. Revisa la consola.', 'error');
-                }
-            });
-        });
-
-        // =======================================================
         // Agregar evento a cada botón de actualizar
         // =======================================================
         document.querySelectorAll('.btn-actualizar').forEach(btn => {
@@ -278,12 +233,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Obtener los valores de los inputs
                 const newName = document.getElementById(`name-input-${id}`).value;
                 const newDescription = document.getElementById(`description-input-${id}`).value;
-                const newPrice = parseFloat(document.getElementById(`price-input-${id}`).value);
                 const newCategory = document.getElementById(`category-input-${id}`).value;
                 const newMaterial = document.getElementById(`material-input-${id}`).value;
 
                 // Validar los datos
-                if (isNaN(newPrice) || newPrice < 0 || !newName.trim() || !newDescription.trim() || !newCategory.trim()) {
+                if (!newName.trim() || !newDescription.trim() || !newCategory.trim()) {
                     showMessageProductos('Por favor, completa todos los campos de forma correcta.', 'error');
                     return;
                 }
@@ -296,7 +250,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     const updatedData = {
                         name: newName,
                         description: newDescription,
-                        price: newPrice,
                         category: newCategory,
                         material: newMaterial
                     };
