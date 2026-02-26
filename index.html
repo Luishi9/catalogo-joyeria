@@ -13,6 +13,12 @@
 </head>
 
 <body>
+    <div class="info-banner-fixed" id="info-banner-fixed">
+        <div class="container">
+            <p><i class="fas fa-info-circle"></i> Esta página es únicamente informativa. No realizamos ventas directas. Para más información, contáctanos por mensaje privado o nuestros canales oficiales.</p>
+            <button class="info-banner-fixed-close" id="info-banner-fixed-close" aria-label="Cerrar aviso"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
     <header>
         <div class="container">
             <div class="logo">
@@ -79,9 +85,8 @@
         <section id="colecciones" class="products">
             <div class="container">
                 <h2>Nuestras Joyas</h2>
-                <div class="info-banner" id="info-banner">
+                <div class="info-banner-static">
                     <p><i class="fas fa-info-circle"></i> Esta página es únicamente informativa. No realizamos ventas directas. Para más información, contáctanos por mensaje privado o nuestros canales oficiales.</p>
-                    <button class="info-banner-close" id="info-banner-close" aria-label="Cerrar aviso"><i class="fas fa-times"></i></button>
                 </div>
                 <div class="product-grid" id="product-grid">
                     <!-- Productos se cargarán desde imgenbb -->
@@ -255,14 +260,27 @@
 -->
 
 <script>
-    // Banner informativo: ajustar posición del header y cerrar
+    // Banner fijo superior: cerrar y ajustar header
     (function () {
-        const banner = document.getElementById('info-banner');
-        const closeBtn = document.getElementById('info-banner-close');
+        const fixedBanner = document.getElementById('info-banner-fixed');
+        const closeBtn = document.getElementById('info-banner-fixed-close');
+        const header = document.querySelector('header');
+
+        function adjustHeader() {
+            if (fixedBanner && !fixedBanner.classList.contains('hidden')) {
+                header.style.top = fixedBanner.offsetHeight + 'px';
+            } else {
+                header.style.top = '0';
+            }
+        }
+
+        adjustHeader();
+        window.addEventListener('resize', adjustHeader);
 
         if (closeBtn) {
             closeBtn.addEventListener('click', function () {
-                banner.classList.add('hidden');
+                fixedBanner.classList.add('hidden');
+                header.style.top = '0';
             });
         }
     })();

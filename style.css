@@ -221,33 +221,39 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Header - Estilo Luxury */
-/* Banner informativo */
-.info-banner {
+/* Banner fijo superior */
+.info-banner-fixed {
     background-color: #1a1a2e;
     color: #caf0f8;
     text-align: center;
-    padding: 15px 20px;
-    border-radius: 8px;
-    margin-bottom: 30px;
-    font-size: 0.9rem;
+    padding: 10px 0;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1100;
+    font-size: 0.85rem;
     letter-spacing: 0.3px;
+    transition: transform 0.3s ease;
+}
+
+.info-banner-fixed .container {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 15px;
-    transition: opacity 0.3s ease, max-height 0.3s ease;
+    padding: 0 30px;
 }
 
-.info-banner p {
+.info-banner-fixed p {
     margin: 0;
     line-height: 1.4;
 }
 
-.info-banner i.fa-info-circle {
+.info-banner-fixed i.fa-info-circle {
     margin-right: 6px;
 }
 
-.info-banner-close {
+.info-banner-fixed-close {
     background: none;
     border: none;
     color: #caf0f8;
@@ -259,12 +265,33 @@ h1, h2, h3, h4, h5, h6 {
     flex-shrink: 0;
 }
 
-.info-banner-close:hover {
+.info-banner-fixed-close:hover {
     opacity: 1;
 }
 
-.info-banner.hidden {
-    display: none;
+.info-banner-fixed.hidden {
+    transform: translateY(-100%);
+}
+
+/* Banner estático sobre el grid de productos */
+.info-banner-static {
+    background-color: #1a1a2e;
+    color: #caf0f8;
+    text-align: center;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+    letter-spacing: 0.3px;
+}
+
+.info-banner-static p {
+    margin: 0;
+    line-height: 1.4;
+}
+
+.info-banner-static i.fa-info-circle {
+    margin-right: 6px;
 }
 
 header {
