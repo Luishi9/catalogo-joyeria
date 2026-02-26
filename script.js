@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 filteredProducts.forEach(product => {
                     const productCard = document.createElement('div');
-                    productCard.className = 'product-card';
+                    productCard.className = 'card text-center product-card';
                     productCard.innerHTML = `
                         <div class="product-img skeleton-loader">
                             <img src="${product.image}" alt="${product.name}" loading="lazy" decoding="async" onload="this.classList.add('loaded'); this.parentElement.classList.remove('skeleton-loader');">
@@ -159,8 +159,9 @@ document.addEventListener('DOMContentLoaded', function () {
                             <span class="product-category ${product.category}">${product.category}</span>
                             <h3 class="product-title">${product.name}</h3>
                             <p class="product-desc">${product.description}</p>
+                        </div>
+                        <div class="card-footer text-body-secondary">
                             <p class="product-material">Material: ${product.material || 'No especificado'}</p>
-                            <div class="product-actions"></div>
                         </div>
                     `;
                     productGrid.appendChild(productCard);
