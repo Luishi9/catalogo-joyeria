@@ -76,13 +76,23 @@
 
         </section>
 
+        <div class="info-banner" id="info-banner">
+            <div class="container">
+                <p><i class="fas fa-info-circle"></i> Esta página es únicamente informativa. No realizamos ventas
+                    directas. Para más información, contáctanos por mensaje privado o nuestros canales oficiales.</p>
+                <button class="info-banner-close" id="info-banner-close" aria-label="Cerrar aviso"><i
+                        class="fas fa-times"></i></button>
+            </div>
+        </div>
+
         <section id="colecciones" class="products">
             <div class="container">
                 <h2>Nuestras Joyas</h2>
                 <div class="product-grid" id="product-grid">
                     <!-- Productos se cargarán desde imgenbb -->
                 </div>
-                <div class="show-more-container" id="show-more-products-container" style="display: none; text-align: center; margin-top: 30px;">
+                <div class="show-more-container" id="show-more-products-container"
+                    style="display: none; text-align: center; margin-top: 30px;">
                     <button class="btn" id="show-more-products-btn">Mostrar más</button>
                 </div>
             </div>
@@ -248,5 +258,33 @@
     
 </script>
 -->
+
+<script>
+    // Banner informativo: ajustar posición del header y cerrar
+    (function () {
+        const banner = document.getElementById('info-banner');
+        const closeBtn = document.getElementById('info-banner-close');
+        const header = document.querySelector('header');
+
+        function adjustHeader() {
+            if (banner && !banner.classList.contains('hidden')) {
+                const bannerHeight = banner.offsetHeight;
+                header.style.top = bannerHeight + 'px';
+            } else {
+                header.style.top = '0';
+            }
+        }
+
+        adjustHeader();
+        window.addEventListener('resize', adjustHeader);
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function () {
+                banner.classList.add('hidden');
+                header.style.top = '0';
+            });
+        }
+    })();
+</script>
 
 </html>
