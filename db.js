@@ -22,3 +22,6 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 export { db };
+
+
+// contraseña para conectase a base de datos en supabase: Azul-Joyeria
