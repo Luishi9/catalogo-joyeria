@@ -46,7 +46,7 @@ h1, h2, h3, h4, h5, h6 {
 .btn {
     display: inline-block;
     background-color: var(--primary-color);
-    color: var(--dark-color);
+    color: #fff;
     padding: 14px 32px;
     border: none;
     border-radius: 0;
