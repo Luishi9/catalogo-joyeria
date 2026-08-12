@@ -113,6 +113,14 @@ h1, h2, h3, h4, h5, h6 {
     z-index: 1;
 }
 
+/* Boton "Mostrar mas" del catalogo: forzar texto blanco en reposo. */
+#show-more-products-btn {
+    color: #fff !important;
+}
+#show-more-products-btn:hover {
+    color: var(--primary-color);
+}
+
 .btn-eliminar {
     display: inline-block;
     background-color: var(--eliminar-color);
