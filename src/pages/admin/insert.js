@@ -40,6 +40,16 @@ async function eliminarImagen(path) {
     if (error) console.warn('No se pudo eliminar la imagen del Storage:', error.message);
 }
 
+// Escapa HTML para insertarlo de forma segura en las celdas de texto.
+function esc(s) {
+    return String(s ?? '')
+        .replace(/&/g, '&')
+        .replace(/</g, '<')
+        .replace(/>/g, '>')
+        .replace(/"/g, '"')
+        .replace(/'/g, '&#039;');
+}
+
 // ---------------------------------------------------------------------------
 // Mensajes
 // ---------------------------------------------------------------------------
@@ -49,14 +59,108 @@ function showMessage(container, msg, type) {
     container.style.display = 'block';
 }
 
+// ---------------------------------------------------------------------------
+// Plantillas de fila (modo lectura y modo edicion)
+// ---------------------------------------------------------------------------
+
+// Fila de PRODUCTO en modo lectura (texto plano, botones Editar/Eliminar).
+function filaProductoHTML(p) {
+    return `
+        <tr data-id="${p.id}" data-image-path="${esc(p.image_path || '')}" data-image="${esc(p.image || '')}">
+            <td class="celda-texto" data-field="name">${esc(p.name)}</td>
+            <td class="celda-texto" data-field="description">${esc(p.description)}</td>
+            <td class="celda-texto" data-field="category">${esc(p.category)}</td>
+            <td class="celda-texto" data-field="material">${esc(p.material || '')}</td>
+            <td><img src="${esc(p.image)}" alt="${esc(p.name)}" style="width: 50px; height: 50px; object-fit: cover;" loading="lazy" decoding="async"></td>
+            <td class="col-acciones">
+                <button class="btn btn-sm btn-editar" data-action="editar" data-id="${p.id}">Editar</button>
+                <button class="btn-eliminar btn-sm" data-action="eliminar" data-id="${p.id}">Eliminar</button>
+            </td>
+        </tr>
+    `;
+}
+
+// Fila de PRODUCTO en modo edicion (inputs, botones Guardar/Cancelar).
+function filaProductoEditHTML(p) {
+    const cats = ['collares', 'pulseras', 'pendientes', 'otros'];
+    const opts = cats.map(c => `<option value="${c}" ${p.category === c ? 'selected' : ''}>${c.charAt(0).toUpperCase() + c.slice(1)}</option>`).join('');
+    return `
+        <tr data-id="${p.id}" data-image-path="${esc(p.image_path || '')}" data-image="${esc(p.image || '')}" data-modo="edicion">
+            <td><input type="text" class="form-control form-control-sm" data-field="name" value="${esc(p.name)}"></td>
+            <td><textarea class="form-control form-control-sm" data-field="description">${esc(p.description)}</textarea></td>
+            <td><select class="form-select form-select-sm" data-field="category">${opts}</select></td>
+            <td><input type="text" class="form-control form-control-sm" data-field="material" value="${esc(p.material || '')}"></td>
+            <td><img src="${esc(p.image)}" alt="${esc(p.name)}" style="width: 50px; height: 50px; object-fit: cover;" loading="lazy" decoding="async"></td>
+            <td class="col-acciones">
+                <button class="btn btn-success btn-sm btn-guardar" data-action="guardar" data-id="${p.id}">Guardar</button>
+                <button class="btn btn-secondary btn-sm btn-cancelar" data-action="cancelar" data-id="${p.id}">Cancelar</button>
+            </td>
+        </tr>
+    `;
+}
+
+// Fila de PIEDRA en modo lectura.
+function filaPiedraHTML(p) {
+    return `
+        <tr data-id="${p.id}" data-image-path="${esc(p.image_path || '')}" data-image="${esc(p.image || '')}">
+            <td class="celda-texto" data-field="nombre">${esc(p.nombre)}</td>
+            <td class="celda-texto" data-field="info">${esc(p.info || '')}</td>
+            <td><img src="${esc(p.image)}" alt="${esc(p.nombre)}" style="width: 50px; height: 50px; object-fit: cover;" loading="lazy" decoding="async"></td>
+            <td class="col-acciones">
+                <button class="btn btn-sm btn-editar" data-action="editar-piedra" data-id="${p.id}">Editar</button>
+                <button class="btn btn-danger btn-sm" data-action="eliminar-piedra" data-id="${p.id}">Eliminar</button>
+            </td>
+        </tr>
+    `;
+}
+
+// Fila de PIEDRA en modo edicion.
+function filaPiedraEditHTML(p) {
+    return `
+        <tr data-id="${p.id}" data-image-path="${esc(p.image_path || '')}" data-image="${esc(p.image || '')}" data-modo="edicion">
+            <td><input type="text" class="form-control" data-field="nombre" value="${esc(p.nombre)}"></td>
+            <td><textarea class="form-control form-control-sm" data-field="info">${esc(p.info || '')}</textarea></td>
+            <td><img src="${esc(p.image)}" alt="${esc(p.nombre)}" style="width: 50px; height: 50px; object-fit: cover;" loading="lazy" decoding="async"></td>
+            <td class="col-acciones">
+                <button class="btn btn-success btn-sm btn-guardar" data-action="guardar-piedra" data-id="${p.id}">Guardar</button>
+                <button class="btn btn-secondary btn-sm btn-cancelar" data-action="cancelar-piedra" data-id="${p.id}">Cancelar</button>
+            </td>
+        </tr>
+    `;
+}
+
+// ---------------------------------------------------------------------------
+// Inicializacion principal
+// ---------------------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
     const messageContainer = document.getElementById('messageContainer');
     const messageProductos = document.getElementById('messageProductos');
     const messagePiedras = document.getElementById('messagePiedras');
     const message2Container = document.getElementById('message2Container');
 
+    // Cache en memoria de las tablas (para paginar sin recargar de la BD).
+    let allProductos = [];
+    let allPiedras = [];
+
+    // Paginacion.
+    const PAGE_SIZE = 50;
+    let productosPage = 0;
+    let piedrasPage = 0;
+
+    // Referencias DOM.
+    const productosBody = document.getElementById('productos-body');
+    const piedrasBody = document.getElementById('piedras-body');
+    const productosPrevBtn = document.getElementById('productos-prev');
+    const productosNextBtn = document.getElementById('productos-next');
+    const productosPageInfo = document.getElementById('productos-page-info');
+    const productosPagination = document.getElementById('productos-pagination');
+    const piedrasPrevBtn = document.getElementById('piedras-prev');
+    const piedrasNextBtn = document.getElementById('piedras-next');
+    const piedrasPageInfo = document.getElementById('piedras-page-info');
+    const piedrasPagination = document.getElementById('piedras-pagination');
+
     // =============================================
-    // === AUTH: si no hay sesion, ir a login ===
+    // === AUTH ===
     // =============================================
     async function checkSession() {
         const { data } = await supabase.auth.getSession();
@@ -81,15 +185,263 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // =============================================
-    // === PRODUCTOS ===
-    // =============================================
+    // =========================================================================
+    // === PAGINACION ===
+    // =========================================================================
+
+    function updateProductosPagination() {
+        const total = allProductos.length;
+        const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+        if (productosPage >= totalPages) productosPage = totalPages - 1;
+        if (productosPage < 0) productosPage = 0;
+
+        if (total <= PAGE_SIZE) {
+            if (productosPagination) productosPagination.style.display = 'none';
+        } else {
+            if (productosPagination) productosPagination.style.display = 'flex';
+            if (productosPrevBtn) productosPrevBtn.disabled = productosPage === 0;
+            if (productosNextBtn) productosNextBtn.disabled = productosPage >= totalPages - 1;
+            if (productosPageInfo) productosPageInfo.textContent = `Página ${productosPage + 1} de ${totalPages} (${total} productos)`;
+        }
+    }
+
+    function updatePiedrasPagination() {
+        const total = allPiedras.length;
+        const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+        if (piedrasPage >= totalPages) piedrasPage = totalPages - 1;
+        if (piedrasPage < 0) piedrasPage = 0;
+
+        if (total <= PAGE_SIZE) {
+            if (piedrasPagination) piedrasPagination.style.display = 'none';
+        } else {
+            if (piedrasPagination) piedrasPagination.style.display = 'flex';
+            if (piedrasPrevBtn) piedrasPrevBtn.disabled = piedrasPage === 0;
+            if (piedrasNextBtn) piedrasNextBtn.disabled = piedrasPage >= totalPages - 1;
+            if (piedrasPageInfo) piedrasPageInfo.textContent = `Página ${piedrasPage + 1} de ${totalPages} (${total} piedras)`;
+        }
+    }
+
+    // Renderiza SOLO las filas de la pagina actual de productos.
+    function renderProductosPage() {
+        const start = productosPage * PAGE_SIZE;
+        const slice = allProductos.slice(start, start + PAGE_SIZE);
+        productosBody.innerHTML = slice.map(filaProductoHTML).join('');
+        updateProductosPagination();
+    }
+
+    function renderPiedrasPage() {
+        const start = piedrasPage * PAGE_SIZE;
+        const slice = allPiedras.slice(start, start + PAGE_SIZE);
+        piedrasBody.innerHTML = slice.map(filaPiedraHTML).join('');
+        updatePiedrasPagination();
+    }
+
+    // Listeners de paginacion (una sola asignacion).
+    if (productosPrevBtn) productosPrevBtn.addEventListener('click', () => {
+        if (productosPage > 0) { productosPage--; renderProductosPage(); }
+    });
+    if (productosNextBtn) productosNextBtn.addEventListener('click', () => {
+        if ((productosPage + 1) * PAGE_SIZE < allProductos.length) { productosPage++; renderProductosPage(); }
+    });
+    if (piedrasPrevBtn) piedrasPrevBtn.addEventListener('click', () => {
+        if (piedrasPage > 0) { piedrasPage--; renderPiedrasPage(); }
+    });
+    if (piedrasNextBtn) piedrasNextBtn.addEventListener('click', () => {
+        if ((piedrasPage + 1) * PAGE_SIZE < allPiedras.length) { piedrasPage++; renderPiedrasPage(); }
+    });
+
+    // Carga inicial de las tablas (UNA sola consulta por coleccion).
+    async function cargarProductos() {
+        const { data, error } = await supabase
+            .from('productos')
+            .select('*')
+            .order('created_at', { ascending: false });
+        if (error) {
+            console.error('Error al cargar productos:', error);
+            showMessage(messageProductos, 'Error al cargar productos.', 'error');
+            return;
+        }
+        allProductos = data || [];
+        productosPage = 0;
+        renderProductosPage();
+    }
+
+    async function cargarPiedras() {
+        const { data, error } = await supabase
+            .from('piedras')
+            .select('*')
+            .order('nombre', { ascending: true });
+        if (error) {
+            console.error('Error al cargar piedras:', error);
+            showMessage(messagePiedras, 'Error al cargar piedras.', 'error');
+            return;
+        }
+        allPiedras = data || [];
+        piedrasPage = 0;
+        renderPiedrasPage();
+    }
+
+    // =========================================================================
+    // === EVENT DELEGATION (un solo listener por tbody) ===
+    // =========================================================================
+
+    // Encuentra la accion y el id a partir del evento click.
+    function despacharClick(e) {
+        const btn = e.target.closest('[data-action]');
+        if (!btn) return null;
+        return { action: btn.dataset.action, id: btn.dataset.id, btn };
+    }
+
+    // Lee los valores de los inputs/textareas dentro de una fila en modo edicion.
+    function leerValoresEdicion(tr) {
+        const out = {};
+        tr.querySelectorAll('[data-field]').forEach(el => {
+            out[el.dataset.field] = el.value;
+        });
+        return out;
+    }
+
+    // --------- Productos: delegation ---------
+    productosBody.addEventListener('click', async (e) => {
+        const d = despacharClick(e);
+        if (!d) return;
+        const tr = productosBody.querySelector(`tr[data-id="${d.id}"]`);
+        if (!tr) return;
+
+        if (d.action === 'editar') {
+            const p = allProductos.find(x => x.id === d.id);
+            if (p) tr.outerHTML = filaProductoEditHTML(p);
+            return;
+        }
+
+        if (d.action === 'cancelar') {
+            const p = allProductos.find(x => x.id === d.id);
+            if (p) tr.outerHTML = filaProductoHTML(p);
+            return;
+        }
+
+        if (d.action === 'guardar') {
+            const valores = leerValoresEdicion(tr);
+            if (!valores.name?.trim() || !valores.description?.trim() || !valores.category?.trim()) {
+                showMessage(messageProductos, 'Por favor, completa todos los campos.', 'error');
+                return;
+            }
+            try {
+                const { error } = await supabase
+                    .from('productos')
+                    .update({
+                        name: valores.name,
+                        description: valores.description,
+                        category: valores.category,
+                        material: valores.material || null,
+                    })
+                    .eq('id', d.id);
+                if (error) throw error;
+
+                // Actualizar cache en memoria y la fila (sin recargar la BD).
+                const idx = allProductos.findIndex(x => x.id === d.id);
+                if (idx >= 0) allProductos[idx] = { ...allProductos[idx], ...valores };
+                tr.outerHTML = filaProductoHTML(allProductos[idx]);
+                showMessage(messageProductos, 'Producto actualizado con éxito.', 'success');
+            } catch (err) {
+                console.error('Error al actualizar:', err);
+                showMessage(messageProductos, 'Error al actualizar. Revisa la consola.', 'error');
+            }
+            return;
+        }
+
+        if (d.action === 'eliminar') {
+            if (!confirm('¿Estás seguro de que deseas eliminar este producto?')) return;
+            try {
+                const imagePath = tr.dataset.imagePath;
+                await eliminarImagen(imagePath);
+                const { error } = await supabase.from('productos').delete().eq('id', d.id);
+                if (error) throw error;
+
+                // Eliminar del cache y del DOM sin re-render total.
+                allProductos = allProductos.filter(x => x.id !== d.id);
+                tr.remove();
+                updateProductosPagination();
+                showMessage(messageProductos, 'Producto eliminado con éxito.', 'success');
+            } catch (err) {
+                console.error('Error al eliminar:', err);
+                showMessage(messageProductos, 'Error al eliminar. Revisa la consola.', 'error');
+            }
+        }
+    });
+
+    // --------- Piedras: delegation ---------
+    piedrasBody.addEventListener('click', async (e) => {
+        const d = despacharClick(e);
+        if (!d) return;
+        const tr = piedrasBody.querySelector(`tr[data-id="${d.id}"]`);
+        if (!tr) return;
+
+        if (d.action === 'editar-piedra') {
+            const p = allPiedras.find(x => x.id === d.id);
+            if (p) tr.outerHTML = filaPiedraEditHTML(p);
+            return;
+        }
+
+        if (d.action === 'cancelar-piedra') {
+            const p = allPiedras.find(x => x.id === d.id);
+            if (p) tr.outerHTML = filaPiedraHTML(p);
+            return;
+        }
+
+        if (d.action === 'guardar-piedra') {
+            const valores = leerValoresEdicion(tr);
+            if (!valores.nombre?.trim() || !valores.info?.trim()) {
+                showMessage(messagePiedras, 'Por favor, completa todos los campos.', 'error');
+                return;
+            }
+            try {
+                const { error } = await supabase
+                    .from('piedras')
+                    .update({ nombre: valores.nombre, info: valores.info })
+                    .eq('id', d.id);
+                if (error) throw error;
+
+                const idx = allPiedras.findIndex(x => x.id === d.id);
+                if (idx >= 0) allPiedras[idx] = { ...allPiedras[idx], ...valores };
+                tr.outerHTML = filaPiedraHTML(allPiedras[idx]);
+                showMessage(messagePiedras, 'Piedra actualizada con éxito.', 'success');
+            } catch (err) {
+                console.error('Error al actualizar piedra:', err);
+                showMessage(messagePiedras, 'Error al actualizar. Revisa la consola.', 'error');
+            }
+            return;
+        }
+
+        if (d.action === 'eliminar-piedra') {
+            if (!confirm('¿Estás seguro de que deseas eliminar esta piedra?')) return;
+            try {
+                const imagePath = tr.dataset.imagePath;
+                await eliminarImagen(imagePath);
+                const { error } = await supabase.from('piedras').delete().eq('id', d.id);
+                if (error) throw error;
+
+                allPiedras = allPiedras.filter(x => x.id !== d.id);
+                tr.remove();
+                updatePiedrasPagination();
+                showMessage(messagePiedras, 'Piedra eliminada con éxito.', 'success');
+            } catch (err) {
+                console.error('Error al eliminar piedra:', err);
+                showMessage(messagePiedras, 'Error al eliminar. Revisa la consola.', 'error');
+            }
+        }
+    });
+
+    // =========================================================================
+    // === FORMULARIOS: alta (con prepend de la fila nueva) ===
+    // =========================================================================
+
+    // ---- Productos ----
     const productForm = document.getElementById('productForm');
     const productImageInput = document.getElementById('productImage');
 
     productForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-
         showMessage(messageContainer, '', '');
         messageContainer.style.display = 'none';
 
@@ -108,11 +460,9 @@ document.addEventListener('DOMContentLoaded', () => {
             showMessage(messageContainer, 'Subiendo imagen y añadiendo producto...', 'success');
             messageContainer.style.color = '#155724';
 
-            // 1. Subir imagen a Supabase Storage
             const { path, url } = await subirImagen('productos', imageFile);
 
-            // 2. Insertar fila en la tabla productos
-            const { error } = await supabase
+            const { data, error } = await supabase
                 .from('productos')
                 .insert({
                     name: productName,
@@ -121,147 +471,35 @@ document.addEventListener('DOMContentLoaded', () => {
                     image_path: path,
                     category: productCategory,
                     material: productMaterial,
-                });
+                })
+                .select()
+                .single();
 
             if (error) {
-                await eliminarImagen(path); // rollback: limpiar imagen si falla el insert
+                await eliminarImagen(path);
                 throw error;
             }
+
+            // Prepend en cache y en DOM (sin re-render total).
+            allProductos.unshift(data);
+            productosPage = 0;
+            renderProductosPage();
 
             showMessage(messageContainer, 'Producto añadido con éxito!', 'success');
             messageContainer.style.color = '';
             productForm.reset();
-            renderProductosTable();
         } catch (error) {
             console.error("Error al añadir el producto:", error);
             showMessage(messageContainer, 'Error al añadir el producto. Revisa la consola.', 'error');
         }
     });
 
-    async function renderProductosTable() {
-        const tableBody = document.querySelector("#productos-table tbody");
-        tableBody.innerHTML = '';
-
-        const { data: rows, error } = await supabase
-            .from('productos')
-            .select('*');
-
-        if (error) {
-            console.error('Error al cargar productos:', error);
-            showMessage(messageProductos, 'Error al cargar productos.', 'error');
-            return;
-        }
-
-        (rows || []).forEach((producto) => {
-            const productoId = producto.id;
-            const row = document.createElement("tr");
-
-            row.innerHTML = `
-            <td>
-                <textarea id="name-input-${productoId}" class="form-control form-control-sm">${producto.name}</textarea>
-            </td>
-            <td>
-                <textarea id="description-input-${productoId}" class="form-control form-control-sm">${producto.description}</textarea>
-            </td>
-            <td>
-                 <select id="category-input-${productoId}" class="form-select form-select-sm">
-                    <option value="collares" ${producto.category === 'collares' ? 'selected' : ''}>Collares</option>
-                    <option value="pulseras" ${producto.category === 'pulseras' ? 'selected' : ''}>Pulseras</option>
-                    <option value="pendientes" ${producto.category === 'pendientes' ? 'selected' : ''}>Pendientes</option>
-                    <option value="otros" ${producto.category === 'otros' ? 'selected' : ''}>Otros</option>
-                </select>                
-            </td>
-            <td>
-                <input type="text" id="material-input-${productoId}" value="${producto.material || ''}" class="form-control form-control-sm">
-            </td>
-            <td><img src="${producto.image}" alt="${producto.name}" style="width: 50px; height: auto;"></td>   
-
-            <td>
-                <button class="btn btn-success btn-sm btn-actualizar" data-id="${productoId}">Actualizar</button>
-                <button class="btn-eliminar btn-sm" data-id="${productoId}">Eliminar</button>
-            </td>
-        `;
-
-            tableBody.appendChild(row);
-        });
-
-        // Eventos de eliminar
-        document.querySelectorAll('.btn-eliminar').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const id = e.target.dataset.id;
-
-                if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
-                    try {
-                        // 1. Obtener la fila para conocer la ruta de la imagen
-                        const { data: fila } = await supabase
-                            .from('productos')
-                            .select('image_path')
-                            .eq('id', id)
-                            .single();
-
-                        // 2. Eliminar la imagen del Storage (si hay ruta)
-                        await eliminarImagen(fila?.image_path);
-
-                        // 3. Eliminar la fila
-                        const { error } = await supabase.from('productos').delete().eq('id', id);
-                        if (error) throw error;
-
-                        showMessage(messageProductos, 'Producto y su imagen eliminados con éxito.', 'success');
-                        renderProductosTable();
-                    } catch (firestoreError) {
-                        console.error("Error al eliminar el producto:", firestoreError);
-                        showMessage(messageProductos, 'Error al eliminar el producto. Revisa la consola.', 'error');
-                    }
-                }
-            });
-        });
-
-        // Eventos de actualizar
-        document.querySelectorAll('.btn-actualizar').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const id = e.target.dataset.id;
-
-                const newName = document.getElementById(`name-input-${id}`).value;
-                const newDescription = document.getElementById(`description-input-${id}`).value;
-                const newCategory = document.getElementById(`category-input-${id}`).value;
-                const newMaterial = document.getElementById(`material-input-${id}`).value;
-
-                if (!newName.trim() || !newDescription.trim() || !newCategory.trim()) {
-                    showMessage(messageProductos, 'Por favor, completa todos los campos de forma correcta.', 'error');
-                    return;
-                }
-
-                try {
-                    const { error } = await supabase
-                        .from('productos')
-                        .update({
-                            name: newName,
-                            description: newDescription,
-                            category: newCategory,
-                            material: newMaterial,
-                        })
-                        .eq('id', id);
-
-                    if (error) throw error;
-
-                    showMessage(messageProductos, 'Producto actualizado con éxito.', 'success');
-                } catch (error) {
-                    console.error("Error al actualizar el producto:", error);
-                    showMessage(messageProductos, 'Error al actualizar el producto. Revisa la consola.', 'error');
-                }
-            });
-        });
-    }
-
-    // =============================================
-    // === PIEDRAS ===
-    // =============================================
+    // ---- Piedras ----
     const piedrasForm = document.getElementById('piedrasForm');
     const piedraImageInput = document.getElementById('piedraImage');
 
     piedrasForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-
         showMessage(message2Container, '', '');
         message2Container.style.display = 'none';
 
@@ -278,139 +516,54 @@ document.addEventListener('DOMContentLoaded', () => {
             showMessage(message2Container, 'Subiendo imagen de la piedra...', 'success');
             message2Container.style.color = '#155724';
 
-            // 1. Subir imagen a Supabase Storage
             const { path, url } = await subirImagen('piedras', piedraImageFile);
 
-            // 2. Insertar fila en la tabla piedras
-            const { error } = await supabase
+            const { data, error } = await supabase
                 .from('piedras')
                 .insert({
                     nombre: nombrePiedra,
                     info: infoPiedra,
                     image: url,
                     image_path: path,
-                });
+                })
+                .select()
+                .single();
 
             if (error) {
-                await eliminarImagen(path); // rollback
+                await eliminarImagen(path);
                 throw error;
+            }
+
+            // Insertar en cache en orden alfabetico; si cae en la pagina actual, re-render.
+            allPiedras.push(data);
+            allPiedras.sort((a, b) => String(a.nombre).localeCompare(String(b.nombre)));
+
+            // Recalcular pagina actual: si la nueva entra en la pagina 0, re-render.
+            const idx = allPiedras.findIndex(x => x.id === data.id);
+            const paginaNueva = Math.floor(idx / PAGE_SIZE);
+            if (paginaNueva === piedrasPage) {
+                renderPiedrasPage();
+            } else {
+                piedrasPage = 0;
+                renderPiedrasPage();
             }
 
             showMessage(message2Container, 'Piedra añadida con éxito!', 'success');
             message2Container.style.color = '';
             piedrasForm.reset();
-            renderPiedrasTable();
         } catch (error) {
             console.error("Error al añadir la piedra:", error);
             showMessage(message2Container, 'Error al añadir la piedra. Revisa la consola.', 'error');
         }
     });
 
-    async function renderPiedrasTable() {
-        const piedrasTableBody = document.querySelector("#piedras-table tbody");
-        piedrasTableBody.innerHTML = '';
-
-        try {
-            const { data: rows, error } = await supabase
-                .from('piedras')
-                .select('*')
-                .order('nombre', { ascending: true });
-
-            if (error) throw error;
-
-            (rows || []).forEach((piedra) => {
-                const piedraId = piedra.id;
-                const row = document.createElement("tr");
-
-                row.innerHTML = `
-                <td>
-                    <input type="text" id="nombre-input-${piedraId}" value="${piedra.nombre}" class="form-control">
-                </td>
-                <td>
-                    <textarea id="info-input-${piedraId}" class="form-control form-control-sm">${piedra.info}</textarea>
-                </td>
-                <td><img src="${piedra.image}" alt="${piedra.nombre}" style="width: 50px; height: auto;"></td>          
-                <td>
-                    <button class="btn btn-success btn-sm btn-actualizar-piedra" data-id="${piedraId}">Actualizar</button>
-                    <button class="btn btn-danger btn-sm btn-eliminar-piedra" data-id="${piedraId}">Eliminar</button>
-                </td>
-            `;
-
-                piedrasTableBody.appendChild(row);
-            });
-        } catch (error) {
-            console.error("Error al obtener piedras desde Supabase:", error);
-            showMessage(messagePiedras, 'Error al cargar piedras.', 'error');
-        }
-
-        // Eventos de eliminar piedra
-        document.querySelectorAll('.btn-eliminar-piedra').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const id = e.target.dataset.id;
-
-                if (confirm('¿Estás seguro de que deseas eliminar esta piedra?')) {
-                    try {
-                        // 1. Obtener la ruta de imagen
-                        const { data: fila } = await supabase
-                            .from('piedras')
-                            .select('image_path')
-                            .eq('id', id)
-                            .single();
-
-                        // 2. Eliminar la imagen del Storage
-                        await eliminarImagen(fila?.image_path);
-
-                        // 3. Eliminar la fila
-                        const { error } = await supabase.from('piedras').delete().eq('id', id);
-                        if (error) throw error;
-
-                        showMessage(messagePiedras, 'Piedra y su imagen eliminadas con éxito.', 'success');
-                        renderPiedrasTable();
-                    } catch (firestoreError) {
-                        console.error("Error al eliminar la piedra:", firestoreError);
-                        showMessage(messagePiedras, 'Error al eliminar la piedra. Revisa la consola.', 'error');
-                    }
-                }
-            });
-        });
-
-        // Eventos de actualizar piedra
-        document.querySelectorAll('.btn-actualizar-piedra').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const id = e.target.dataset.id;
-
-                const nuevoNombre = document.getElementById(`nombre-input-${id}`).value;
-                const nuevaInfo = document.getElementById(`info-input-${id}`).value;
-
-                if (!nuevoNombre.trim() || !nuevaInfo.trim()) {
-                    showMessage(messagePiedras, 'Por favor, completa todos los campos.', 'error');
-                    return;
-                }
-
-                try {
-                    const { error } = await supabase
-                        .from('piedras')
-                        .update({ nombre: nuevoNombre, info: nuevaInfo })
-                        .eq('id', id);
-
-                    if (error) throw error;
-
-                    showMessage(messagePiedras, 'Piedra actualizada con éxito.', 'success');
-                } catch (error) {
-                    console.error("Error al actualizar la piedra:", error);
-                    showMessage(messagePiedras, 'Error al actualizar la piedra. Revisa la consola.', 'error');
-                }
-            });
-        });
-    }
-
-    // =============================================
+    // =========================================================================
     // === INICIALIZACION ===
-    // =============================================
+    // =========================================================================
     checkSession().then((session) => {
         if (!session) return;
         renderCurrentUser();
-        renderProductosTable();
-        renderPiedrasTable();
+        cargarProductos();
+        cargarPiedras();
     });
 });
