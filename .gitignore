@@ -38,3 +38,8 @@ Thumbs.db
 .cache
 .temp
 .tmp
+
+# Backups locales de migracion (no se suben al repo)
+migrations/*.json
+migrations/*.zip
+!migrations/.gitkeep

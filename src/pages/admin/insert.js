@@ -2,6 +2,7 @@
 // Panel de administracion: CRUD de productos y piedras con Supabase.
 // Usa Supabase Auth (sesion obligatoria) y Supabase Storage para imagenes.
 import { supabase, STORAGE_BUCKET, publicImageUrl } from '../../lib/supabase.js';
+import { optimizarImagen } from '../../lib/imageUtils.js';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -9,16 +10,25 @@ import { supabase, STORAGE_BUCKET, publicImageUrl } from '../../lib/supabase.js'
 
 // Genera una ruta unica dentro del bucket para una imagen subida.
 function storagePath(carpeta, file) {
-    const ext = file.name.split('.').pop() || 'jpg';
-    return `${carpeta}/${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${ext}`;
+    const ext = (file.name || '').split('.').pop() || 'jpg';
+    // Tras optimizar, el MIME es webp. Forzamos .webp para coherence.
+    const finalExt = file.type === 'image/webp' ? 'webp' : ext;
+    return `${carpeta}/${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${finalExt}`;
 }
 
-async function subirImagen(carpeta, file) {
+async function subirImagen(carpeta, file, opts = {}) {
     if (!file) throw new Error('No se proporcionó ningún archivo.');
-    const path = storagePath(carpeta, file);
-    const { error } = await supabase.storage.from(STORAGE_BUCKET).upload(path, file, {
+
+    // 1. Optimizar imagen en el navegador (WebP + resize) antes de subir.
+    const maxWidth = opts.maxWidth ?? (carpeta === 'piedras' ? 600 : 1200);
+    const optimizado = await optimizarImagen(file, { maxWidth, quality: 0.82 });
+
+    // 2. Subir a Supabase Storage.
+    const path = storagePath(carpeta, optimizado);
+    const { error } = await supabase.storage.from(STORAGE_BUCKET).upload(path, optimizado, {
         cacheControl: '3600',
         upsert: false,
+        contentType: optimizado.type || 'image/webp',
     });
     if (error) throw new Error(`Error al subir imagen: ${error.message}`);
     return { path, url: publicImageUrl(path) };
