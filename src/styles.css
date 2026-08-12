@@ -1,4 +1,6 @@
 /* Estilos generales - Versión Luxury */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
+
 :root {
     --azul-color: #00b4d8; /* Azul */
     --azul-h1: #caf0f8; /* Azul para letras inicio */
@@ -19,8 +21,6 @@
     padding: 0;
     box-sizing: border-box;
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
 
 body {
     background-color: var(--light-color);
@@ -360,6 +360,37 @@ header .container {
     display: block; /* Elimina cualquier espacio extra que pueda añadir el navegador por defecto a las imágenes */
 }
 
+/* Barra de usuario en el panel admin (email + cerrar sesion) */
+.user-bar {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-email {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.user-bar .btn-export.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.user-bar .btn-export.btn-secondary:hover {
+    background-color: #565e64;
+}
+
 .main-nav ul {
     display: flex;
     list-style: none;
@@ -444,7 +475,7 @@ header .container {
 /* Hero section - Estilo Galería de Lujo */
 .hero {
     background: linear-gradient(var(--overlay-color), var(--overlay-color)), 
-                url('./src/img/fondo.jpg'), no-repeat;
+                url('/img/fondo.jpg'), no-repeat;
     background-size: cover;
     background-position: center;
     background-attachment: fixed;

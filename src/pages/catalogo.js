@@ -1,5 +1,6 @@
-import { collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
-import { db } from './db.js'; // Asegúrate de que la ruta sea correcta
+// src/pages/catalogo.js
+// Catalogo publico: lee productos y piedras desde Supabase (Postgres).
+import { supabase } from '../lib/supabase.js';
 
 document.addEventListener('DOMContentLoaded', function () {
     const productGrid = document.getElementById('product-grid');
@@ -50,16 +51,16 @@ document.addEventListener('DOMContentLoaded', function () {
             categoryButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
 
-            // CORRECTO: Actualiza la variable de estado global `currentCategoryFilter`
+            // Actualiza la variable de estado global `currentCategoryFilter`
             currentCategoryFilter = button.dataset.category;
 
-            // CORRECTO: Llama a renderProducts SIN parámetros, ya que usa las variables de estado globales
+            // Llama a renderProducts SIN parámetros, ya que usa las variables de estado globales
             renderProducts();
         });
     });
 
     // =========================================================================
-    // === NUEVA FUNCIÓN: Carga y muestra los botones de filtro de materiales ===
+    // === Carga y muestra los botones de filtro de materiales ===
     // =========================================================================
     async function loadMaterialFilters() {
         // Limpiar el contenedor actual de filtros
@@ -67,11 +68,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const uniqueMaterials = new Set();
         try {
-            const querySnapshot = await getDocs(collection(db, "productos"));
-            querySnapshot.forEach((doc) => {
-                const producto = doc.data();
-                const materialString = producto.material;
+            const { data: productos, error } = await supabase
+                .from('productos')
+                .select('material');
 
+            if (error) throw error;
+
+            (productos || []).forEach((producto) => {
+                const materialString = producto.material;
                 if (materialString) {
                     // Divide por comas o espacios, y filtra cadenas vacías
                     materialString.split(/[,\s]+/).filter(Boolean).forEach(part => {
@@ -84,7 +88,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         } catch (error) {
             console.error("Error al obtener materiales para los filtros:", error);
-            // Puedes mostrar un mensaje de error en el UI si es necesario
         }
 
         const sortedMaterials = Array.from(uniqueMaterials).sort();
@@ -108,11 +111,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // =========================================================================
-    // === NUEVO EVENT LISTENER para el SELECT de materiales ===
+    // === EVENT LISTENER para el SELECT de materiales ===
     // =========================================================================
     materialSelectFilter.addEventListener('change', () => {
-        currentMaterialFilter = materialSelectFilter.value; // Actualiza el filtro de material con el valor seleccionado
-        renderProducts(); // Renderiza los productos con el nuevo filtro
+        currentMaterialFilter = materialSelectFilter.value;
+        renderProducts();
     });
 
     // =========================================================================
@@ -127,35 +130,29 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-    // Renderizar productos desde Firestore
-    // Ya no acepta parámetros, usa las variables de estado globales
+    // Renderizar productos desde Supabase
     async function renderProducts() {
         productGrid.innerHTML = '';
 
         try {
-            const querySnapshot = await getDocs(collection(db, "productos"));
-            let products = [];
+            const { data: rows, error } = await supabase
+                .from('productos')
+                .select('*');
 
-            querySnapshot.forEach((doc) => {
-                products.push({ id: doc.id, ...doc.data() });
-            });
+            if (error) throw error;
+
+            let products = (rows || []).map(row => ({ id: row.id, ...row }));
 
             // Aplicar filtro de categoría
-            // Usa currentCategoryFilter, que ya está actualizado por los botones de categoría
             let filteredProducts = currentCategoryFilter === 'all'
                 ? products
                 : products.filter(product => product.category === currentCategoryFilter);
 
             // Aplicar filtro de material (si no es 'all')
-            // Usa currentMaterialFilter, que ya está actualizado por los botones de material
             if (currentMaterialFilter !== 'all') {
                 filteredProducts = filteredProducts.filter(product => {
-                    // Asegúrate de que product.material exista antes de intentar .toLowerCase() o .split()
                     const productMaterialString = product.material ? String(product.material).toLowerCase() : '';
-                    // Divide por coma o espacio, y filtra vacíos
                     const materialsInProduct = productMaterialString.split(/[,\s]+/).filter(Boolean);
-
-                    // Verifica si ALGUNO de los materiales del producto coincide con el filtro
                     return materialsInProduct.includes(currentMaterialFilter.toLowerCase());
                 });
             }
@@ -197,32 +194,29 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
 
-
         } catch (error) {
-            console.error("Error al obtener productos desde Firestore:", error);
+            console.error("Error al obtener productos desde Supabase:", error);
             productGrid.innerHTML = '<p class="error">No se pudieron cargar los productos.</p>';
         }
     }
 
-    
-    // Renderizar piedras e informacion desde FireStore
-    // Asegúrate de que 'piedrasGrid' y 'showMoreBtn' estén definidos
+
+    // Renderizar piedras e información desde Supabase
     const showMoreBtn = document.getElementById('show-more-piedras-btn');
     async function renderPiedras() {
         piedrasGrid.innerHTML = '';
-        showMoreBtn.style.display = 'none'; // Ocultar el botón al inicio
+        showMoreBtn.style.display = 'none';
 
         try {
+            // Ordenar por nombre ascendente
+            const { data: rows, error } = await supabase
+                .from('piedras')
+                .select('*')
+                .order('nombre', { ascending: true });
 
-            // == Ordenar por Nombre ==
-            const piedrasCollection = query(collection(db, "piedras"), orderBy("nombre", "asc"));
+            if (error) throw error;
 
-            const querySnapshot = await getDocs(piedrasCollection);
-            
-            let piedras = [];
-            querySnapshot.forEach((doc) => {
-                piedras.push({ id: doc.id, ...doc.data() });
-            });
+            let piedras = (rows || []).map(row => ({ id: row.id, ...row }));
 
             if (piedras.length === 0) {
                 piedrasGrid.innerHTML = '<p>No hay piedras para mostrar.</p>';
@@ -236,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 piedraCard.innerHTML = `
                         <div class="row g-0">
                             <div class="col-md-2 text-center">
-                                <img src="${piedra.image}" class="img-fluid rounded-start" alt="${piedra.name}" loading="lazy" decoding="async">
+                                <img src="${piedra.image}" class="img-fluid rounded-start" alt="${piedra.nombre}" loading="lazy" decoding="async">
                             </div>
                             <div class="col-md-10">
                                 <div class="card-body">
@@ -253,22 +247,21 @@ document.addEventListener('DOMContentLoaded', function () {
             if (piedras.length > 3) {
                 showMoreBtn.style.display = 'block';
 
-                // Agrega el evento para mostrar todas las tarjetas al hacer clic
                 showMoreBtn.onclick = () => {
                     document.querySelectorAll('.hidden-card').forEach(card => {
                         card.classList.remove('hidden-card');
                     });
-                    showMoreBtn.style.display = 'none'; // Oculta el botón después de usarse
+                    showMoreBtn.style.display = 'none';
                 };
             }
         } catch (error) {
-            console.error("Error al obtener piedras desde Firestore:", error);
+            console.error("Error al obtener piedras desde Supabase:", error);
             piedrasGrid.innerHTML = '<p class="error">No se pudieron cargar las piedras.</p>';
         }
     }
 
-    // Inicializar: cargar filtros de material y renderizar productos
+    // Inicializar: cargar filtros de material, productos y piedras
     loadMaterialFilters();
-    renderProducts(); // Llama a renderProducts sin argumentos, usará los filtros globales 'all'
-    renderPiedras(); // Llama a renderPiedras para cargar las piedras
+    renderProducts();
+    renderPiedras();
 });

@@ -1,9 +1,8 @@
-// insert/export.js
-// Modulo de exportacion de datos (JSON) e imagenes (ZIP) desde Firestore.
+// src/pages/admin/export.js
+// Modulo de exportacion de datos (JSON) e imagenes (ZIP) desde Supabase.
 // Depende de JSZip (cargado por CDN en index.html como window.JSZip).
 
-import { db } from '../db.js';
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+import { supabase } from '../../lib/supabase.js';
 
 // Colleccion -> campo que contiene la URL publica de la imagen
 const IMAGE_FIELDS = {
@@ -15,8 +14,7 @@ const IMAGE_FIELDS = {
 // Utilidades
 // ---------------------------------------------------------------------------
 
-// Convierte Timestamps de Firestore a ISO strings para que el JSON sea legible
-// y re-importable.
+// Convierte Timestamps ISO/Date a strings legibles para el JSON.
 function serialize(value) {
     if (value === null || value === undefined) return value;
     if (typeof value.toDate === 'function') return value.toDate().toISOString();
@@ -74,12 +72,13 @@ function safeName(s) {
 // ---------------------------------------------------------------------------
 
 async function exportarColeccion(nombre) {
-    const snap = await getDocs(collection(db, nombre));
-    const arr = [];
-    snap.forEach(d => {
-        arr.push({ id: d.id, ...serialize(d.data()) });
-    });
-    return arr;
+    const { data: rows, error } = await supabase
+        .from(nombre)
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) throw new Error(`Error al leer ${nombre}: ${error.message}`);
+    return (rows || []).map(d => ({ id: d.id, ...serialize(d) }));
 }
 
 // ---------------------------------------------------------------------------

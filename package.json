@@ -1,0 +1,19 @@
+{
+  "name": "catalogo-joyeria",
+  "version": "1.0.0",
+  "description": "Catalogo de AZUL JOYERIA - migrado a Supabase + Vite",
+  "type": "module",
+  "private": true,
+"scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "migrar": "node --env-file=.env scripts/migrar-firestore-a-supabase.js migrations"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0"
+  }
+}

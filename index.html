@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AZUL JOYERIA</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/src/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
@@ -23,7 +23,7 @@
         <div class="container">
             <div class="logo">
                 <div class="logo-img-container">
-                    <img src="src/img/logo.png" alt="Logo PLP Jewels">
+                    <img src="/img/logo.png" alt="Logo PLP Jewels">
                 </div>
                 <h1><span>AZUL</span> JOYERIA</h1>
             </div>
@@ -132,7 +132,7 @@
                     </p>
                 </div>
                 <div class="about-image">
-                    <img src="src/img/logo.png" alt="Artesano trabajando">
+                    <img src="/img/logo.png" alt="Artesano trabajando">
                 </div>
             </div>
         </section>
@@ -141,7 +141,7 @@
             <div class="container">
                 <h2>Nuestras Piedras</h2>
                 <div class="piedras-grid" id="piedras-grid">
-                    <!-- Piedras se cargarán dinámicamente desde db.js -->
+                    <!-- Piedras se cargarán dinámicamente desde Supabase -->
 
                 </div>
                 <div class="text-center mt-4">
@@ -219,45 +219,12 @@
     </footer>
 
 
-    <script type="module" src="script.js"></script>
+    <script type="module" src="/src/pages/catalogo.js"></script>
 
 
 </body>
 
-<!--
-<script type="module">
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
-
-    // TODO: Add SDKs for Firebase products that you want to use
-    // https://firebase.google.com/docs/web/setup#available-libraries
-
-    // Your web app's Firebase configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyBWnHAjESYjfe0evxdipMYHuj8DZziH7GE",
-        authDomain: "catalogo-5e529.firebaseapp.com",
-        projectId: "catalogo-5e529",
-        storageBucket: "catalogo-5e529.firebasestorage.app",
-        messagingSenderId: "485951596781",
-        appId: "1:485951596781:web:43ecaba21313efc78284e4"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-
-    const db = getFirestore(app);
-
-    // Obtener productos
-    const querySnapshot = await getDocs(collection(db, "productos"));
-    querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        console.log("Producto:", data);
-    });
-    
-</script>
--->
+</html>
 
 <script>
     // Banner fijo superior: cerrar y ajustar header

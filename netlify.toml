@@ -1,0 +1,15 @@
+# Netlify: build del sitio estatico (Vite) y redireccion para multi-pagina.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Evitar que Netlify active funciones/frameworks no deseados.
+[settings]
+  NODE_VERSION = "20"
+
+# Multi-pagina: /insert/ y /insert/login.html son HTMLs reales generados por Vite.
+# Solo anadimos un redirect de "pretty URL" para /insert sin slash final.
+[[redirects]]
+  from = "/insert"
+  to = "/insert/index.html"
+  status = 200
