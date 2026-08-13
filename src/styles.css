@@ -1448,6 +1448,12 @@ footer:before {
 }
 
 @media (max-width: 992px) {    
+
+    main .container,
+    footer .container {
+        max-width: 100%;
+    }
+
     .hero {
         height: auto;
         padding: 150px 0 100px;
@@ -1467,8 +1473,9 @@ footer:before {
 }
 
 @media (max-width: 768px) {
-    .container {
-        padding: 0 20px;
+     main .container,
+    footer .container {
+        max-width: 100%;
     }
     
     .hero h2 {
