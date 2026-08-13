@@ -15,38 +15,59 @@
 <body>
     <div class="info-banner-fixed" id="info-banner-fixed">
         <div class="container">
-            <p><i class="fas fa-info-circle"></i> Esta página es únicamente informativa. No realizamos ventas directas. Para más información, contáctanos por mensaje privado o nuestros canales oficiales.</p>
-            <button class="info-banner-fixed-close" id="info-banner-fixed-close" aria-label="Cerrar aviso"><i class="fas fa-times"></i></button>
+            <p><i class="fas fa-info-circle"></i> Esta página es únicamente informativa. No realizamos ventas directas.
+                Para más información, contáctanos por mensaje privado o nuestros canales oficiales.</p>
+            <button class="info-banner-fixed-close" id="info-banner-fixed-close" aria-label="Cerrar aviso"><i
+                    class="fas fa-times"></i></button>
         </div>
     </div>
     <header>
         <div class="container">
-            <div class="logo">
-                <div class="logo-img-container">
-                    <img src="/img/logo.png" alt="Logo AZUL JOYERIA">
+
+            <nav class="navbar navbar-expand-lg">
+                <div class="container-fluid">
+
+                    <div class="logo">
+                        <div class="logo-img-container">
+                            <img src="/img/logo.png" alt="Logo AZUL JOYERIA">
+                        </div>
+                        <h1><span>AZUL</span> JOYERIA</h1>
+                    </div>
+
+                    <div class="display-flex ">
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page" href="#inicio">Inicio</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#colecciones">Colecciones</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#nosotros">Nosotros</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#piedras">Piedras</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#contacto">Contacto</a>
+                                </li>
+                            </ul>
+                            <form class="d-flex" role="search" id="global-search-form">
+                                <input class="form-control me-2" type="search" id="global-search-input" placeholder="Buscar material o piedra..."
+                                    aria-label="Search" />
+                                <button class="btn-buscar" type="submit" id="global-search-btn">Buscar</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <h1><span>AZUL</span> JOYERIA</h1>
-            </div>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="#inicio">Inicio</a></li>
-                    <li><a href="#colecciones">Colecciones</a></li>
-                    <li><a href="#nosotros">Nosotros</a></li>
-                    <li><a href="#piedras">Piedras</a></li>
-                    <li><a href="#contacto">Contacto</a></li>
-                </ul>
             </nav>
-
-            <div class="cart-icon">
-                <!--
-                <i class="fas fa-shopping-cart"></i>
-                <span class="cart-count">0</span>
-                -->
-            </div>
-
-            <div class="mobile-menu-btn">
-                <i class="fas fa-bars"></i>
-            </div>
         </div>
     </header>
 
@@ -86,7 +107,9 @@
             <div class="container">
                 <h2>Nuestras Joyas</h2>
                 <div class="info-banner-static">
-                    <p><i class="fas fa-info-circle"></i> Esta página es únicamente informativa. No realizamos ventas directas. Para más información, contáctanos por mensaje privado o nuestros canales oficiales.</p>
+                    <p><i class="fas fa-info-circle"></i> Esta página es únicamente informativa. No realizamos ventas
+                        directas. Para más información, contáctanos por mensaje privado o nuestros canales oficiales.
+                    </p>
                 </div>
                 <div class="product-grid" id="product-grid">
                     <!-- Productos se cargarán desde imgenbb -->
@@ -140,10 +163,18 @@
         <section id="piedras" class="piedras">
             <div class="container">
                 <h2>Nuestras Piedras</h2>
+
+                <div class="piedras-search-wrap mb-4">
+                    <form class="d-flex" role="search">
+                        <input class="form-control me-2" type="search" id="piedras-search" placeholder="Buscar piedra..." aria-label="Search" />
+                        <button class="btn-buscar" type="submit" id="piedras-search-btn">Buscar</button>
+                    </form>
+                </div>
+
                 <div class="piedras-grid" id="piedras-grid">
                     <!-- Piedras se cargarán dinámicamente desde Supabase -->
-
                 </div>
+
                 <div class="text-center mt-4">
                     <button id="show-more-piedras-btn" class="btn btn-primary" style="display: none;">Ver más
                         piedras</button>
@@ -220,6 +251,9 @@
 
 
     <script type="module" src="/src/pages/catalogo.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
 
 
 </body>

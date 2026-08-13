@@ -12,7 +12,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const materialSelectFilter = document.getElementById('material-select-filter');
 
+    // Estado de busqueda por piedras (solo en la seccion de piedras, no global)
     const piedrasGrid = document.getElementById('piedras-grid');
+    const piedrasSearchInput = document.getElementById('piedras-search');
+    const piedrasSearchForm = piedrasSearchInput?.closest('form');
+    let currentPiedrasSearchTerm = '';
+
+    // Estado de busqueda global (para productos y piedras)
+    const globalSearchInput = document.getElementById('global-search-input');
+    const globalSearchForm = document.getElementById('global-search-form');
+    let currentGlobalSearchTerm = '';
 
     const showMoreProductsBtn = document.getElementById('show-more-products-btn');
     const showMoreProductsContainer = document.getElementById('show-more-products-container');
@@ -170,6 +179,13 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
+        if (currentGlobalSearchTerm.trim() !== '') {
+            const q = currentGlobalSearchTerm.trim().toLowerCase();
+            filteredProducts = filteredProducts.filter(product =>
+                (product.material || '').toLowerCase().includes(q)
+            );
+        }
+
         if (filteredProducts.length === 0) {
             productGrid.innerHTML = '<p class="no-products-message">No se encontraron productos que coincidan con los filtros.</p>';
             showMoreProductsContainer.style.display = 'none';
@@ -217,19 +233,35 @@ document.addEventListener('DOMContentLoaded', function () {
     // =========================================================================
 
     const showMoreBtn = document.getElementById('show-more-piedras-btn');
+
+    function filtarPiedras(query) {
+        if (!query) return allPiedras;
+        const q = query.trim().toLowerCase();
+        return allPiedras.filter(p =>
+            (p.nombre || '').toLowerCase().includes(q) ||
+            (p.info || '').toLowerCase().includes(q)
+        );
+    }
+
     function renderPiedras() {
         piedrasGrid.innerHTML = '';
         showMoreBtn.style.display = 'none';
 
-        const piedras = allPiedras;
+        const terminoActivo = (currentPiedrasSearchTerm || currentGlobalSearchTerm).trim();
+
+        const piedras = filtarPiedras(terminoActivo);
         if (piedras.length === 0) {
-            piedrasGrid.innerHTML = '<p>No hay piedras para mostrar.</p>';
+            piedrasGrid.innerHTML = terminoActivo
+                ? '<p>No se encontraron piedras que coincidan con la búsqueda.</p>'
+                : '<p>No hay piedras para mostrar.</p>';
             return;
         }
 
+        const buscando = terminoActivo !== '';
+
         piedras.forEach((piedra, index) => {
             const piedraCard = document.createElement('div');
-            piedraCard.className = `card mb-3 piedra-card ${index >= 3 ? 'hidden-card' : ''}`;
+            piedraCard.className = `card mb-3 piedra-card ${!buscando && index >= 3 ? 'hidden-card' : ''}`;
 
             piedraCard.innerHTML = `
                     <div class="row g-0">
@@ -248,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function () {
             piedrasGrid.appendChild(piedraCard);
         });
 
-        if (piedras.length > 3) {
+        if (!buscando && piedras.length > 3) {
             showMoreBtn.style.display = 'block';
             showMoreBtn.onclick = () => {
                 document.querySelectorAll('.hidden-card').forEach(card => card.classList.remove('hidden-card'));
@@ -256,6 +288,30 @@ document.addEventListener('DOMContentLoaded', function () {
             };
         }
     }
+
+    globalSearchInput?.addEventListener('input', () => {
+        currentGlobalSearchTerm = globalSearchInput.value;
+        renderProducts();
+        renderPiedras();
+    });
+
+    globalSearchForm?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        currentGlobalSearchTerm = globalSearchInput.value;
+        renderProducts();
+        renderPiedras();
+    });
+
+    piedrasSearchInput?.addEventListener('input', () => {
+        currentPiedrasSearchTerm = piedrasSearchInput.value;
+        renderPiedras();
+    });
+
+    piedrasSearchForm?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        currentPiedrasSearchTerm = piedrasSearchInput.value;
+        renderPiedras();
+    });
 
     // =========================================================================
     // === Inicializacion: un solo fetch ===

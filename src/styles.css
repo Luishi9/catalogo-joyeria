@@ -94,6 +94,22 @@ h1, h2, h3, h4, h5, h6 {
     width: 100%;
 }
 
+.btn-buscar {
+    background-color: transparent;
+    color: var(--dark-color);
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    padding: 6px 16px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-buscar:hover {
+    background-color: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+}
+
 .btn-editar {
     display: inline-block;
     background-color: var(--primary-color);
@@ -343,8 +359,14 @@ header .container {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
+    max-width: 90%;
     padding: 20px 30px;
     transition: var(--transition);
+}
+
+header .navbar {
+    width: 100%;
 }
 
 .logo {

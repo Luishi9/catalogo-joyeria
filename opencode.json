@@ -1,0 +1,88 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    //"AGENTS.md",
+    //"PROJECT_INDEX.md"
+  ],
+  "tool_output": {
+    "max_bytes": 10240
+  },
+  "compaction": {
+    "auto": true,
+    "tail_turns": 4
+  },
+  "provider": {
+    "nvidia": {
+      "options": {
+        "apiKey": "{env:NVIDIA_API_KEY_1}"
+      },
+      "models": {
+        "minimaxai/minimax-m3": {
+          "limit": {
+            "context": 1000000,
+            "output": 8192
+          },
+          "options": {
+            "max_tokens": 8192
+          }
+        }
+      }
+    },
+    "nvidia-2": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Nvidia (2)",
+      "options": {
+        "apiKey": "{env:NVIDIA_API_KEY_2}",
+        "baseURL": "https://integrate.api.nvidia.com/v1"
+      },
+      "models": {
+        "minimaxai/minimax-m3": {
+          "limit": {
+            "context": 1000000,
+            "output": 8192
+          },
+          "options": {
+            "max_tokens": 8192
+          }
+        }
+      }
+    },
+    "nvidia-3": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Nvidia (3)",
+      "options": {
+        "apiKey": "{env:NVIDIA_API_KEY_3}",
+        "baseURL": "https://integrate.api.nvidia.com/v1"
+      },
+      "models": {
+        "minimaxai/minimax-m3": {
+          "limit": {
+            "context": 1000000,
+            "output": 8192
+          },
+          "options": {
+            "max_tokens": 8192
+          }
+        }
+      }
+    },
+    "z-ai": {
+      "options": {
+        "timeout": 600000,
+        "headerTimeout": 60000,
+        "chunkTimeout": 30000
+      },
+      "models": {
+        "glm-5.2": {
+          "limit": {
+            "context": 128000,
+            "output": 16384
+          },
+          "options": {
+            "max_tokens": 16384
+          }
+        }
+      }
+    }
+  }
+}
