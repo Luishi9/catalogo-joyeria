@@ -981,7 +981,7 @@ header .navbar {
     overflow: hidden;
 }
 
-.about .container {
+.about .container-fluid {
     display: flex;
     align-items: center;
     gap: 80px;
@@ -1041,7 +1041,7 @@ header .navbar {
     background-color: var(--light-color);
 }
 
-.features .container {
+.features .container-fluid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 50px;
