@@ -1447,13 +1447,6 @@ footer:before {
     }
 }
 
-@media (max-width: 1199px) {
-    main .container,
-    footer .container {
-        max-width: 100%;
-    }
-}
-
 @media (max-width: 992px) {    
 
     .hero {
