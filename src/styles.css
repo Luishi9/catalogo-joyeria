@@ -369,18 +369,26 @@ header .navbar {
     width: 100%;
 }
 
+.navbar-toggler {
+    margin-left: auto;
+}
+
 .logo {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: clamp(8px, 1.5vw, 15px);
+    min-width: 0px;
 }
 
 .logo h1 {
-    font-size: 2rem;
+    font-size: clamp(1rem, 3vw, 2rem);
+    letter-spacing: clamp(1px, 0.3vw, 3px);
     color: var(--dark-color);
     font-weight: 700;
-    letter-spacing: 3px;
     text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .logo span {
@@ -390,14 +398,22 @@ header .navbar {
 
 /* Estilos para el contenedor de la imagen circular */
 .logo-img-container {
-    width: 50px;  /* Define el ancho del círculo (ajusta el tamaño deseado) */
-    height: 50px; /* Define el alto del círculo (debe ser igual al ancho) */
-    border-radius: 50%; /* Hace que el contenedor sea circular */
-    overflow: hidden; /* Recorta cualquier parte de la imagen que se salga del círculo */
-    display: flex; /* Asegura que la imagen dentro también se centre si es necesario */
-    justify-content: center; /* Centra horizontalmente la imagen dentro del círculo */
-    align-items: center; /* Centra verticalmente la imagen dentro del círculo */
+    /* width: 50px;  Define el ancho del círculo (ajusta el tamaño deseado) */
+    /*height: 50px; /* Define el alto del círculo (debe ser igual al ancho) */
+    /*border-radius: 50%; /* Hace que el contenedor sea circular */
+    /*overflow: hidden; /* Recorta cualquier parte de la imagen que se salga del círculo */
+    /*display: flex; /* Asegura que la imagen dentro también se centre si es necesario */
+    /*justify-content: center; /* Centra horizontalmente la imagen dentro del círculo */
+    /*align-items: center; /* Centra verticalmente la imagen dentro del círculo */
     /* border: 1px solid #ccc;  Opcional: puedes añadir un borde si quieres */
+
+    width: clamp(34px, 5vw, 50px);
+    height: clamp(34px, 5vw, 50px);
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Estilos para la imagen dentro del círculo */
