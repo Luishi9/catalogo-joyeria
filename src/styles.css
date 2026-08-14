@@ -1437,61 +1437,7 @@ footer:before {
 }
 
 /* Responsive Design */
-@media (max-width: 1200px) {    
-    .hero h2 {
-        font-size: 3.5rem;
-    }
-    
-    .about .container {
-        gap: 50px;
-    }
-}
 
-@media (max-width: 992px) {    
-
-    .hero {
-        height: auto;
-        padding: 150px 0 100px;
-    }
-    
-    .hero h2 {
-        font-size: 2.8rem;
-    }
-    
-    .about .container {
-        flex-direction: column;
-    }
-    
-    .about-image {
-        margin-top: 50px;
-    }
-}
-
-@media (max-width: 768px) {
-    
-    .hero h2 {
-        font-size: 2.5rem;
-    }
-    
-    .section-title {
-        font-size: 2rem;
-    }
-    
-    .product-grid {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 30px;
-    }
-    
-    .category-buttons {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .category-btn {
-        width: 100%;
-        max-width: 250px;
-    }
-}
 /*
 @media (max-width: 576px) {
     .hero h2 {
