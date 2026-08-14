@@ -1492,7 +1492,7 @@ footer:before {
         max-width: 250px;
     }
 }
-
+/*
 @media (max-width: 576px) {
     .hero h2 {
         font-size: 2rem;
@@ -1523,6 +1523,7 @@ footer:before {
         justify-content: center;
     }
 }
+    */
 
 /* Animaciones */
 @keyframes fadeIn {
