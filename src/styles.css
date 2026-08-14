@@ -1447,12 +1447,14 @@ footer:before {
     }
 }
 
-@media (max-width: 992px) {    
-
+@media (max-width: 1199px) {
     main .container,
     footer .container {
         max-width: 100%;
     }
+}
+
+@media (max-width: 992px) {    
 
     .hero {
         height: auto;
@@ -1473,10 +1475,6 @@ footer:before {
 }
 
 @media (max-width: 768px) {
-     main .container,
-    footer .container {
-        max-width: 100%;
-    }
     
     .hero h2 {
         font-size: 2.5rem;
