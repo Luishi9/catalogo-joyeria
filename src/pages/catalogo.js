@@ -4,7 +4,7 @@
 import { supabase } from '../lib/supabase.js';
 
 // importar keepalive.js para mantener la base de datos activa
-//import '../keepalive.js'; // O la ruta donde lo guardes
+
 
 document.addEventListener('DOMContentLoaded', function () {
     const productGrid = document.getElementById('product-grid');
@@ -321,3 +321,5 @@ document.addEventListener('DOMContentLoaded', function () {
     // =========================================================================
     cargarDatos();
 });
+
+import '../keepalive.js'; // O la ruta donde lo guardes
