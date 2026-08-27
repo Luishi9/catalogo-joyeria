@@ -13,11 +13,3 @@
   from = "/insert"
   to = "/insert/index.html"
   status = 200
-
-# Keep-alive para mantener Supabase activa (pings cada 5 minutos)
-[functions]
-  [functions.file]
-    file = "netlify/functions/keepalive.js"
-
-  [[functions.schedule]]
-    cron = "*/5 * * * *"
