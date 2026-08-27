@@ -36,13 +36,6 @@ h1, h2, h3, h4, h5, h6 {
     letter-spacing: 0.5px;
 }
 
-.container {
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 30px;
-}
-
 .btn {
     display: inline-block;
     background-color: var(--primary-color);
@@ -997,13 +990,7 @@ header .navbar {
     overflow: hidden;
 }
 
-.about .container-fluid {
-    display: flex;
-    align-items: center;
-    gap: 80px;
-    position: relative;
-    z-index: 2;
-}
+
 
 .about-content {
     flex: 1;
@@ -1486,6 +1473,23 @@ footer:before {
     }
 }
     */
+
+/* Product Grid - Galería de productos */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+}
+
+.about .container-fluid {
+    display: flex;
+    align-items: center;
+    gap: 80px;
+    position: relative;
+    z-index: 2;
+    width: 90%;
+}
+
 
 /* Animaciones */
 @keyframes fadeIn {
