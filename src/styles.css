@@ -716,7 +716,6 @@ header .navbar {
 
 /* Categories - Filtros elegantes */
 .categories {
-    padding: 100px 0 60px;
     text-align: center;
     background-color: var(--light-color);
 }
@@ -983,7 +982,7 @@ header .navbar {
 
 /* About Section - Estilo elegante */
 .about {
-    padding: 120px 0;
+    padding: 50px 0;
     background-color: var(--dark-color);
     color: white;
     position: relative;
