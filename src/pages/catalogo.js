@@ -3,7 +3,8 @@
 // Optimizacion: carga 1 sola vez los productos y los filtra en memoria.
 import { supabase } from '../lib/supabase.js';
 
-import './keepalive.js'; // O la ruta donde lo guardes
+
+import './src/keepalive.js'; // O la ruta donde lo guardes
 
 document.addEventListener('DOMContentLoaded', function () {
     const productGrid = document.getElementById('product-grid');
