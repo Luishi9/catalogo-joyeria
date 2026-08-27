@@ -18,5 +18,5 @@
 [functions]
   file = "netlify/functions/keepalive.js"
 
-  [functions.schedule]
+  [[functions.schedule]]
     cron = "*/5 * * * *"
